@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Hermes Commander — Neural Office OS</title>
+<meta name="description" content="Hermes Control Hub & Virtual Office with Cyber-Neural Simulator, 3D Brain Simulation, and AI Agent Roster." />
+<meta property="og:title" content="Project Hermes Commander — Neural Office OS" />
+<meta property="og:description" content="Hermes Control Hub & Virtual Office with Cyber-Neural Simulator, 3D Brain Simulation, and AI Agent Roster." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+
+<!-- Added Three.js and GSAP for 3D Simulations and Animation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { sans: ['Inter','Noto Sans Thai','ui-sans-serif','system-ui','sans-serif'] },
+    boxShadow: {
+      glass: '0 8px 24px -8px rgba(2,6,23,.10), 0 2px 6px rgba(2,6,23,.04)',
+      lift:  '0 18px 36px -14px rgba(2,6,23,.18)'
+    }
+  } }
+}
+</script>
+<style>
+/* ========== PROJECT HERMES COMMANDER — DESIGN SYSTEM v0.4 ========== */
+@property --ang { syntax:'<angle>'; initial-value:0deg; inherits:false; }
+html,body{ font-family:'Inter','Noto Sans Thai',ui-sans-serif,system-ui,sans-serif; }
+::-webkit-scrollbar{ width:10px; height:10px }
+::-webkit-scrollbar-track{ background:transparent }
+::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:8px; border:2px solid #f4f6fb }
+::-webkit-scrollbar-thumb:hover{ background:#94a3b8 }
+
+.glass{ background:rgba(255,255,255,.78); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+.app-bg{
+  background-color:#f4f6fb;
+  background-image:
+    radial-gradient(1100px 560px at 88% -12%, rgba(99,102,241,.09), transparent 60%),
+    radial-gradient(900px 480px at -8% 18%, rgba(6,182,212,.09), transparent 55%),
+    radial-gradient(rgba(148,163,184,.13) 1px, transparent 1px);
+  background-size:auto,auto,22px 22px;
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes fadeUp{ from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:translateY(0)} }
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+@keyframes fadeOut{ from{opacity:1} to{opacity:0} }
+@keyframes modalIn{ from{opacity:0; transform:translateY(28px) scale(.95)} to{opacity:1; transform:translateY(0) scale(1)} }
+@keyframes modalOut{ from{opacity:1; transform:translateY(0) scale(1)} to{opacity:0; transform:translateY(14px) scale(.97)} }
+@keyframes floaty{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+@keyframes pulseDot{ 0%{box-shadow:0 0 0 0 var(--glow)} 70%{box-shadow:0 0 0 7px transparent} 100%{box-shadow:0 0 0 0 transparent} }
+@keyframes shineSweep{ 0%{transform:translateX(-180%) skewX(-18deg)} 55%{transform:translateX(320%) skewX(-18deg)} 100%{transform:translateX(320%) skewX(-18deg)} }
+@keyframes holoShift{ from{background-position:0% 50%} to{background-position:100% 50%} }
+@keyframes urSpin{ to{--ang:360deg} }
+@keyframes growBar{ to{width:var(--w)} }
+@keyframes twinkle{ 0%,100%{opacity:.15; transform:scale(.7) rotate(0deg)} 50%{opacity:1; transform:scale(1.25) rotate(35deg)} }
+@keyframes sparkDraw{ to{stroke-dashoffset:0} }
+
+/* Electric & Aura Keyframes */
+@keyframes auraPulse {
+  0%, 100% { box-shadow: 0 0 22px var(--aura-color), 0 0 45px var(--aura-color-soft); transform: scale(1); }
+  50% { box-shadow: 0 0 38px var(--aura-color), 0 0 75px var(--aura-color-soft); transform: scale(1.08); }
+}
+@keyframes electricJitter {
+  0%, 100% { opacity: 0.95; filter: drop-shadow(0 0 8px #38bdf8); }
+  50% { opacity: 0.7; filter: drop-shadow(0 0 16px #818cf8); }
+}
+@keyframes holoScanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.view-anim{ animation:fadeUp .5s cubic-bezier(.22,.8,.28,1) both }
+.card-in{ animation:fadeUp .55s cubic-bezier(.22,.8,.28,1) both }
+.spark{ stroke-dasharray:260; stroke-dashoffset:260; animation:sparkDraw 1.4s .2s ease-out forwards }
+
+/* ---------- Sprite sheet layers (character sheet 6x3) ---------- */
+.sprite-bg{
+  position:absolute; inset:-6%; background-repeat:no-repeat;
+  filter:blur(16px) saturate(1.25) brightness(1.05);
+  transform:scale(1.05); transition:transform .7s ease;
+}
+.sprite-layer{
+  position:absolute; top:0; left:50%; height:100%;
+  aspect-ratio:var(--cell-ar, 8/9);
+  background-repeat:no-repeat;
+  transform:translateX(-50%) scale(1);
+  transition:transform .7s cubic-bezier(.2,.8,.2,1);
+}
+.group:hover .sprite-layer{ transform:translateX(-50%) scale(1.06) }
+.group:hover .sprite-bg{ transform:scale(1.12) }
+.media-zoom{ transition:transform .7s cubic-bezier(.2,.8,.2,1) }
+.group:hover .media-zoom{ transform:scale(1.06) }
+model-viewer{ --progress-bar-color:transparent; outline:none; background:transparent }
+
+/* ---------- Nav ---------- */
+.nav-active{
+  background:linear-gradient(90deg, rgba(99,102,241,.13), rgba(6,182,212,.10));
+  color:#4338ca !important; border-color:rgba(99,102,241,.28) !important;
+  box-shadow:0 4px 14px -6px rgba(99,102,241,.35);
+}
+
+/* ---------- Gacha frames ---------- */
+.card-wrap{ padding:1.5px; background:#e2e8f0; border-radius:18px;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, background .35s; }
+.card-wrap:focus-visible{ outline:2px solid #6366f1; outline-offset:3px }
+.card-sr:hover{ transform:translateY(-6px); background:var(--c);
+  box-shadow:0 18px 34px -14px var(--glow), 0 6px 18px rgba(2,6,23,.08); }
+.card-ssr{ background:linear-gradient(135deg,#fcd34d,#fef3c7,#f59e0b,#fcd34d); background-size:300% 300%; }
+.card-ssr:hover{ transform:translateY(-6px) scale(1.015);
+  box-shadow:0 24px 48px -16px rgba(245,158,11,.5), 0 0 0 1px rgba(252,211,77,.45); }
+.card-ur,.ur-frame{
+  background:conic-gradient(from var(--ang),#ff004c,#ff8a00,#ffe600,#7cff00,#00ffd0,#00a3ff,#7a00ff,#ff004c);
+  animation:urSpin 7s linear infinite;
+}
+.card-ur{ padding:2.5px; box-shadow:0 20px 50px -20px rgba(168,85,247,.45); }
+.card-ur:hover{ transform:translateY(-4px); animation:urSpin 2.6s linear infinite;
+  box-shadow:0 30px 64px -18px rgba(124,58,237,.5), 0 0 46px -6px rgba(6,182,212,.35), 0 0 46px -6px rgba(244,63,94,.28); }
+.ur-frame{ padding:2.5px; border-radius:18px; }
+
+.holo{ opacity:0; transition:opacity .4s; mix-blend-mode:overlay; background-size:300% 300%;
+  background-image:linear-gradient(115deg, rgba(6,182,212,.35), rgba(139,92,246,.32), rgba(245,158,11,.34), rgba(34,197,94,.28), rgba(6,182,212,.35)); }
+.card-ssr:hover .holo,.card-ur:hover .holo{ opacity:1; animation:holoShift 2.4s ease-in-out infinite alternate; }
+.shine-bar{ position:absolute; top:-20%; bottom:-20%; width:38%; left:0; transform:translateX(-180%) skewX(-18deg);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.85), transparent); }
+.card-ssr:hover .shine-bar{ animation:shineSweep 1.5s ease-in-out infinite; }
+.card-ur .shine-bar{ animation:shineSweep 3.8s ease-in-out infinite; }
+
+.badge-ssr{ background:linear-gradient(120deg,#f59e0b,#fde68a,#f59e0b); background-size:200% 100%; }
+.badge-ur{ background:linear-gradient(90deg,#f43f5e,#f59e0b,#facc15,#4ade80,#22d3ee,#818cf8,#e879f9,#f43f5e); background-size:300% 100%; }
+.rainbow-text{ background:linear-gradient(90deg,#f43f5e,#f59e0b,#facc15,#4ade80,#22d3ee,#818cf8,#e879f9,#f43f5e);
+  background-size:300% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shimmerBadge 5s linear infinite; }
+.dot-pulse{ animation:pulseDot 2.2s ease-out infinite }
+.sparkle{ animation:twinkle 2.6s ease-in-out infinite; text-shadow:0 0 10px rgba(255,255,255,.9); }
+
+/* ---------- Node Aura Classes ---------- */
+.node-aura-hub {
+  --aura-color: rgba(6,182,212,0.9);
+  --aura-color-soft: rgba(6,182,212,0.45);
+  animation: auraPulse 2.2s ease-in-out infinite;
+}
+.node-aura-tamkoa {
+  --aura-color: rgba(132,204,22,0.9);
+  --aura-color-soft: rgba(132,204,22,0.45);
+  animation: auraPulse 2.2s ease-in-out infinite;
+}
+.node-aura-tumkao {
+  --aura-color: rgba(99,102,241,0.9);
+  --aura-color-soft: rgba(99,102,241,0.45);
+  animation: auraPulse 2.2s ease-in-out infinite;
+}
+
+/* ---------- 3D Container Fullscreen Utility ---------- */
+.fullscreen-3d {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 100 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+}
+
+/* ---------- Modals ---------- */
+.modal-open  .modal-backdrop{ animation:fadeIn .25s ease both }
+.modal-open  .modal-panel{ animation:modalIn .42s cubic-bezier(.16,1,.3,1) both }
+.modal-closing .modal-backdrop{ animation:fadeOut .19s ease both }
+.modal-closing .modal-panel{ animation:modalOut .19s ease both }
+.bar-fill{ width:0; animation:growBar .9s .15s cubic-bezier(.22,.9,.3,1) forwards }
+
+#toast{ transition:opacity .3s, transform .3s; }
+#toast.show{ opacity:1; transform:translate(-50%,0); }
+</style>
+</head>
+
+<body class="antialiased text-slate-800">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="glass z-40 flex w-[268px] shrink-0 flex-col border-r border-slate-200/70">
+    <div class="flex items-center gap-3 px-5 pb-5 pt-6">
+      <div class="relative">
+        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-500 shadow-lg shadow-indigo-500/30">
+          <svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </div>
+        <span class="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-emerald-400 ring-2 ring-white"></span>
+      </div>
+      <div class="min-w-0">
+        <p class="text-[10px] font-black tracking-[0.22em] text-sky-600">PROJECT</p>
+        <h1 class="truncate text-[15px] font-black tracking-tight text-slate-900">Hermes Control Hub</h1>
+      </div>
+    </div>
+
+    <nav class="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
+      <p class="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Overview</p>
+      
+      <!-- Home Menu -->
+      <button data-view="home" class="nav-item flex w-full items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-left transition hover:bg-white/80">
+        <svg class="h-[18px] w-[18px] shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1z"/></svg>
+        <span class="min-w-0"><span class="block text-sm font-bold text-slate-700">Home</span><span class="block truncate text-[10px] font-semibold text-slate-400">หน้าบัญชาการ</span></span>
+      </button>
+      
+      <!-- Agents Menu -->
+      <button data-view="agents" class="nav-item flex w-full items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-left transition hover:bg-white/80">
+        <svg class="h-[18px] w-[18px] shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span class="min-w-0 flex-1"><span class="block text-sm font-bold text-slate-700">Agents</span><span class="block truncate text-[10px] font-semibold text-slate-400">คลังเอเจนต์ทั้งหมด</span></span>
+        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-extrabold text-slate-500">18</span>
+      </button>
+
+      <!-- Neural 3D Map Menu -->
+      <button data-view="neural" class="nav-item flex w-full items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-left transition hover:bg-white/80">
+        <svg class="h-[18px] w-[18px] shrink-0 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-9 5 18 3-9h5"/></svg>
+        <span class="min-w-0 flex-1"><span class="block text-sm font-bold text-slate-700">Neural 3D Map</span><span class="block truncate text-[10px] font-semibold text-slate-400">แผนผังสมองจำลอง</span></span>
+        <span class="rounded-full bg-indigo-100 px-2 py-0.5 text-[9px] font-extrabold text-indigo-600">NEW</span>
+      </button>
+
+      <p class="px-3 pb-1 pt-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Operations</p>
+      <button data-toast="📋 Tasks module — coming soon" class="flex w-full items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-white/80 hover:text-slate-900">
+        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 13l2 2 4-4"/></svg>
+        Tasks <span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-black text-slate-400">SOON</span>
+      </button>
+      <button data-toast="🔀 Workflows module — coming soon" class="flex w-full items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-white/80 hover:text-slate-900">
+        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="12" cy="18" r="2.2"/><path d="M7 7.5l3.5 8M17 7.5l-3.5 8M7.2 6h9.6"/></svg>
+        Workflows <span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-black text-slate-400">SOON</span>
+      </button>
+      <button data-toast="📚 Knowledge Base — coming soon" class="flex w-full items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-white/80 hover:text-slate-900">
+        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        Knowledge Base <span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-black text-slate-400">SOON</span>
+      </button>
+
+      <p class="px-3 pb-1 pt-4 text-[10px] font-black uppercase tracking-widest text-slate-400">System</p>
+      <button data-toast="⚙️ Settings — coming soon" class="flex w-full items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-white/80 hover:text-slate-900">
+        <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33h0a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51h0a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06-.06a1.65 1.65 0 00-.33 1.82v0a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings <span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-black text-slate-400">SOON</span>
+      </button>
+    </nav>
+
+    <div class="px-3 pb-2">
+      <button id="guide-cameo" class="flex w-full items-center gap-3 rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-3 text-left shadow-sm transition hover:shadow-md hover:brightness-[1.02]">
+        <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-500 text-xs font-black text-white ring-2 ring-white">GU
+          <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-white"></span></span>
+        <span class="min-w-0">
+          <span class="block truncate text-xs font-black text-slate-800">GUIDE · ผู้ช่วย AI</span>
+          <span class="block truncate text-[11px] font-medium text-slate-500">“วันนี้มีงาน 3 ชิ้นรออนุมัตินะคะ”</span>
+        </span>
+      </button>
+    </div>
+    <p class="px-5 pb-4 pt-2 text-[10px] font-semibold text-slate-400">v0.4 prototype · UR Update · Mock data</p>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main id="main-scroll" class="app-bg relative flex-1 overflow-y-auto">
+
+    <header class="glass sticky top-0 z-30 flex items-center gap-3 border-b border-slate-200/70 px-6 py-2.5">
+      <div class="min-w-0">
+        <p class="text-[9px] font-black tracking-[0.18em] text-slate-400">HERMES COMMAND HUB · <span class="text-indigo-500">VIRTUAL OFFICE</span></p>
+        <h2 id="top-title" class="truncate text-sm font-extrabold text-slate-800">หน้าบัญชาการกลาง</h2>
+      </div>
+      <div class="ml-auto flex items-center gap-2.5">
+        <span class="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700 md:flex">
+          <span class="dot-pulse h-2 w-2 rounded-full" style="background:#22c55e; --glow:rgba(34,197,94,.5)"></span>
+          Live Ops <span id="live-ago" class="font-semibold text-emerald-500">3s ago</span>
+        </span>
+        <span class="hidden font-mono text-[11px] font-semibold text-slate-500 lg:block" id="clock-top">--:--:--</span>
+        <span class="hidden items-center gap-2.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-600 shadow-sm xl:flex">
+          <span class="text-sky-600">◧ 12</span><span class="text-emerald-600">✓ 8</span><span class="text-rose-600">⚠ 2</span>
+        </span>
+        <div class="hidden items-center overflow-hidden rounded-lg border border-slate-200 sm:flex">
+          <button class="bg-slate-900 px-2 py-1 text-[10px] font-bold text-white">EN</button>
+          <button class="bg-white px-2 py-1 text-[10px] font-bold text-slate-400">TH</button>
+        </div>
+        <button id="btn-refresh" class="hidden rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-[11px] font-bold text-indigo-600 transition hover:bg-indigo-100 md:block">อัปเดตสถานะ</button>
+        
+        <!-- Toggle Button: Data Mock / Real Hub -->
+        <div class="hidden items-center rounded-full bg-slate-50 p-0.5 shadow-sm border border-slate-200 md:flex">
+          <button class="rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-sky-700 shadow-sm border border-slate-100">ข้อมูลตัวอย่าง</button>
+          <button class="rounded-full px-3 py-1.5 text-[11px] font-bold text-slate-400 transition hover:text-slate-600">Hub จริง</button>
+        </div>
+
+        <div class="hidden text-right lg:block">
+          <p class="font-mono text-[11px] font-bold leading-tight text-slate-700" id="clock-tz">--:--:--</p>
+          <p class="text-[9px] font-semibold text-slate-400">Asia/Bangkok</p>
+        </div>
+        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 text-sm font-black text-white ring-2 ring-white">H</div>
+      </div>
+    </header>
+
+    <!-- ========== VIEW A : CONSOLE HOME (VIRTUAL OFFICE) ========== -->
+    <section id="view-home" class="view-anim p-6 lg:p-8">
+
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Command Console · หน้าบัญชาการ</p>
+          <h1 class="mt-1 text-3xl font-black tracking-tight text-slate-900">สวัสดี Commander</h1>
+          <p class="mt-1 text-sm font-medium text-slate-500">ภาพรวมสำนักงานเสมือน Hermes Hub × Tamkoa × Tumkao แบบเรียลไทม์ (Mock data)</p>
+        </div>
+        <button id="albert-banner" class="ur-frame group rounded-2xl text-left transition hover:scale-[1.02]" aria-label="Open ALBERT III profile">
+          <div class="flex items-center gap-3 rounded-[15px] bg-white px-4 py-2.5">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl text-[11px] font-black text-white shadow-md" style="background:linear-gradient(135deg,#f43f5e,#f59e0b,#22c55e,#22d3ee,#818cf8)">AIII</span>
+            <span>
+              <span class="rainbow-text block text-[9px] font-black tracking-[0.18em]">+ UR · MASTER ORCHESTRATOR</span>
+              <span class="rainbow-text block text-sm font-black leading-tight">ALBERT III</span>
+              <span class="mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold text-slate-500"><span class="dot-pulse h-1.5 w-1.5 rounded-full" style="background:#22c55e;--glow:rgba(34,197,94,.5)"></span>Online · zone.hub_bridge</span>
+            </span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Widgets -->
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white/85 p-5 shadow-glass backdrop-blur">
+          <div class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-cyan-200/40 blur-2xl"></div>
+          <div class="relative flex items-center justify-between">
+            <p class="text-[10px] font-black tracking-widest text-slate-400">HERMES CORE STATUS</p>
+            <!-- Sleek Circuit Board Processor Icon matching sample -->
+            <span class="flex h-9 w-9 items-center justify-center rounded-2xl bg-cyan-50/90 border border-cyan-100 shadow-sm text-cyan-600 transition hover:scale-105">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="5" width="14" height="14" rx="2.5"></rect>
+                <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" fill-opacity="0.18"></rect>
+                <path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="relative mt-3 flex items-center gap-3">
+            <span class="orb h-12 w-12 rounded-full bg-gradient-to-br from-cyan-300 to-sky-500 shadow-inner"></span>
+            <div>
+              <p class="text-2xl font-black leading-tight text-cyan-500">Online</p>
+              <p class="text-[11px] font-semibold text-slate-400">ทุกระบบทำงานปกติ · Uptime 99.98%</p>
+              <p class="text-[10px] font-bold text-slate-500">ควบคุมโดย <span class="rainbow-text font-black">ALBERT III · UR</span></p>
+            </div>
+          </div>
+          <div class="relative mt-4 grid grid-cols-3 gap-2">
+            <div class="rounded-xl border border-slate-100 bg-slate-50/80 p-2 text-center"><p class="text-sm font-black text-slate-800">42ms</p><p class="text-[9px] font-bold text-slate-400">Latency</p></div>
+            <div class="rounded-xl border border-slate-100 bg-slate-50/80 p-2 text-center"><p class="text-sm font-black text-slate-800">7</p><p class="text-[9px] font-bold text-slate-400">Queue</p></div>
+            <div class="rounded-xl border border-slate-100 bg-slate-50/80 p-2 text-center"><p class="text-sm font-black text-slate-800">12/12</p><p class="text-[9px] font-bold text-slate-400">Connectors</p></div>
+          </div>
+          <svg class="relative mt-3 h-8 w-full" viewBox="0 0 120 32" preserveAspectRatio="none">
+            <path d="M0,24 L12,20 L24,26 L36,15 L48,21 L60,11 L72,17 L84,9 L96,15 L108,7 L120,13 L120,32 L0,32 Z" fill="rgba(6,182,212,.12)"></path>
+            <path class="spark" d="M0,24 L12,20 L24,26 L36,15 L48,21 L60,11 L72,17 L84,9 L96,15 L108,7 L120,13" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+        </div>
+
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white/85 p-5 shadow-glass backdrop-blur">
+          <div class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-indigo-200/40 blur-2xl"></div>
+          <div class="relative flex items-center justify-between">
+            <p class="text-[10px] font-black tracking-widest text-slate-400">ACTIVE AGENTS</p>
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span>
+          </div>
+          <p class="relative mt-3 text-2xl font-black text-slate-900">18 <span class="text-sm font-bold text-slate-500">Active Agents</span></p>
+          <p class="relative text-[11px] font-semibold text-slate-400"><span class="rainbow-text font-black">1 UR</span> • <span class="text-amber-600">4 SSR</span> • <span class="text-slate-500">13 SR</span> • 3 ฝ่ายทำงาน</p>
+          <div class="relative mt-3 flex -space-x-1.5" id="avatar-stack"></div>
+          <div class="relative mt-4 space-y-2" id="dept-bars"></div>
+        </div>
+
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white/85 p-5 shadow-glass backdrop-blur">
+          <div class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-amber-200/40 blur-2xl"></div>
+          <div class="relative flex items-center justify-between">
+            <p class="text-[10px] font-black tracking-widest text-slate-400">RECENT TASKS</p>
+            <span class="rounded-full bg-sky-50 px-2 py-0.5 text-[9px] font-black text-sky-600 ring-1 ring-sky-200">+6 TODAY</span>
+          </div>
+          <p class="relative mt-3 text-2xl font-black text-slate-900">24 <span class="text-sm font-bold text-slate-500">งานวันนี้</span></p>
+          <p class="relative text-sm font-bold text-slate-600">12 <span class="text-xs font-semibold text-slate-400">Open Tasks</span></p>
+          <div class="relative mt-2 flex gap-2">
+            <span class="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-600 ring-1 ring-violet-200">8 In Review</span>
+            <span class="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600 ring-1 ring-rose-200">2 Failed → Wrench</span>
+          </div>
+          <div class="relative mt-3 space-y-2" id="task-mini"></div>
+        </div>
+
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white/85 p-5 shadow-glass backdrop-blur">
+          <div class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-amber-200/50 blur-2xl"></div>
+          <div class="relative flex items-center justify-between">
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>
+            <span class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-black text-amber-600 ring-1 ring-amber-200">VOLTS</span>
+          </div>
+          <p class="relative mt-4 text-[10px] font-black tracking-widest text-slate-400">API QUOTA &amp; LIMITS</p>
+          <p class="relative mt-1 text-3xl font-black text-slate-900">642k <span class="text-base font-bold text-slate-400">/ 1.0M tokens</span></p>
+          
+          <!-- Token Burn / Pacman Animation -->
+          <div class="relative mt-4 h-4 overflow-hidden rounded-full bg-slate-900 border border-slate-700 shadow-inner">
+            <div id="token-dots" class="absolute inset-0 flex items-center justify-between px-3 opacity-60">
+              <!-- Dots injected via JS -->
+            </div>
+            <div id="token-bar" class="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500"></div>
+            
+            <!-- Pacman SVG Anim -->
+            <svg id="pacman-anim" viewBox="0 0 100 100" class="absolute top-1/2 -translate-y-1/2 h-7 w-7 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,1)] z-10" style="margin-left: -14px;">
+              <path fill="currentColor">
+                <animate attributeName="d" values="M 50 50 L 100 20 A 50 50 0 1 0 100 80 Z; M 50 50 L 100 45 A 50 50 0 1 0 100 55 Z; M 50 50 L 100 20 A 50 50 0 1 0 100 80 Z" dur="0.3s" repeatCount="indefinite" />
+              </path>
+            </svg>
+          </div>
+
+          <p class="relative mt-3 font-mono text-[11px] font-bold text-slate-500">resets in <span id="quota-count">06:12:44</span></p>
+        </div>
+      </div>
+
+      <!-- Live view + side panels -->
+      <div class="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
+        
+        <!-- VIRTUAL OFFICE 3D INTERACTIVE -->
+        <div class="relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white/85 shadow-glass backdrop-blur xl:col-span-2 flex flex-col">
+          <div class="relative flex items-center justify-between border-b border-slate-100 px-5 py-3.5 z-30 bg-white/50 backdrop-blur">
+            <div class="flex items-center gap-2.5">
+              <span class="dot-pulse h-2.5 w-2.5 rounded-full bg-rose-500" style="--glow:rgba(244,63,94,.5)"></span>
+              <span class="text-[11px] font-black tracking-widest text-rose-500">LIVE</span>
+              <!-- Cleaned UI (Restored Design text removed) -->
+              <h2 class="text-sm font-extrabold text-slate-800">Virtual Office Live View</h2>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="rounded-full border border-slate-200 bg-white px-2.5 py-1 font-mono text-[10px] font-bold text-slate-500" id="clock-map">--:--:--</span>
+              <span class="hidden rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold text-slate-500 sm:block">18 agents on map</span>
+            </div>
+          </div>
+
+          <!-- 3D Office Container -->
+          <div id="vo-container" class="relative flex-1 min-h-[520px] bg-gradient-to-br from-slate-50 to-sky-50 overflow-hidden cursor-move transition-all duration-300">
+            <button id="vo-fullscreen-btn" class="absolute top-4 right-4 z-40 flex h-8 w-8 items-center justify-center rounded-lg bg-white/80 border border-slate-200 text-slate-600 shadow-sm hover:bg-slate-100 transition backdrop-blur" title="Full Screen">⛶</button>
+            
+            <div id="vo-canvas" class="absolute inset-0 z-0"></div>
+            <div id="vo-zones" class="absolute inset-0 z-20 pointer-events-none"></div>
+
+            <div class="absolute bottom-3 left-4 flex items-center gap-3 rounded-full bg-white/80 backdrop-blur px-3.5 py-1.5 text-[10px] font-bold text-slate-500 shadow-sm border border-slate-200 z-30 pointer-events-auto">
+              <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Online</span>
+              <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-amber-500"></span>Busy</span>
+              <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-slate-400"></span>Idle</span>
+            </div>
+            <p class="absolute bottom-3 right-4 text-[10px] font-semibold text-slate-400 z-30">Drag to Rotate • No Zoom (Overview Locked)</p>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div class="rounded-3xl border border-slate-200/60 bg-white/85 p-5 shadow-glass backdrop-blur">
+            <div class="mb-4 flex items-center justify-between">
+              <h3 class="text-sm font-extrabold text-slate-800">Recent Tickets</h3>
+              <button data-toast="📋 Full task board — coming soon" class="text-[11px] font-bold text-indigo-500 hover:underline">View all →</button>
+            </div>
+            <div class="space-y-3" id="ticket-list"></div>
+          </div>
+          <div class="rounded-3xl border border-slate-200/60 bg-white/85 p-5 shadow-glass backdrop-blur">
+            <h3 class="mb-4 text-sm font-extrabold text-slate-800">Activity Feed</h3>
+            <div class="space-y-4" id="activity-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== VIEW B : AGENTS ROSTER ========== -->
+    <section id="view-agents" class="hidden p-6 lg:p-8">
+      <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-black tracking-tight text-slate-900">Agent Roster &amp; Hierarchy</h1>
+          <p class="mt-1 text-sm font-medium text-slate-500">รวมพลเอเจนต์ AI ทั้ง 3 ฝ่าย • 18 agents • <span id="roster-count"></span></p>
+          <p class="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-[11px] font-bold text-indigo-600">
+            ✏️ กดปุ่มดินสอบนการ์ดเพื่อใส่รูป / วิดีโอ / โมเดล 3D ของคุณเอง</p>
+        </div>
+        <label class="relative block w-full sm:w-80">
+          <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input id="agent-search" type="text" placeholder="Search agents, roles, zones…  ( / )"
+            class="w-full rounded-xl border border-slate-200 bg-white/90 py-2.5 pl-10 pr-4 text-sm font-medium shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100">
+        </label>
+      </div>
+      <div id="chips" class="mb-6 flex flex-wrap items-center gap-2.5"></div>
+      <div id="roster-sections"></div>
+    </section>
+
+    <!-- ========== VIEW C : NEURAL 3D MAP (Cyber-Neural Simulator) ========== -->
+    <section id="view-neural" class="hidden p-6 lg:p-8">
+      <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-widest text-indigo-500">Cyber-Neural Simulator</p>
+          <h1 class="text-2xl font-black tracking-tight text-slate-900">แผนผังสมองจำลอง (Agent Hierarchy View)</h1>
+          <p class="mt-1 text-xs font-semibold text-slate-500">แบบจำลองโครงข่ายประสาทชีวภาพ 3D • หัวหน้าทีมพร้อมออร่า • กระแสไฟฟ้าเชื่อมโยงตามลำดับชั้น</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-200/70 px-3 py-1 text-[11px] font-bold text-indigo-700">
+            <span class="h-2 w-2 rounded-full bg-indigo-500 animate-ping"></span>
+            Neural Synapse Active
+          </span>
+        </div>
+      </div>
+
+      <!-- Neural 3D Container -->
+      <div id="neural-container" class="relative w-full h-[78vh] rounded-3xl border border-slate-200/60 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 shadow-glass overflow-hidden cursor-move transition-all duration-300">
+        <button id="neural-fullscreen-btn" class="absolute top-4 right-4 z-40 flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 shadow-sm hover:bg-slate-700 transition backdrop-blur" title="Full Screen">⛶</button>
+        
+        <div id="neural-canvas" class="absolute inset-0 z-0"></div>
+        
+        <!-- Albert Hologram Core (Floating 3D Hologram - No Solid Box Background) -->
+        <div id="albert-hologram" class="absolute left-1/2 top-1/2 z-10 h-72 w-72 -translate-x-1/2 -translate-y-[62%] pointer-events-none flex flex-col items-center justify-center">
+            <!-- Hologram ambient light aura & beam -->
+            <div class="absolute inset-0 bg-gradient-to-t from-cyan-400/25 via-indigo-500/20 to-transparent blur-2xl rounded-full animate-pulse [animation-duration:3.2s]"></div>
+            
+            <!-- Holographic projector disc rings beneath Albert on 3D base plane -->
+            <div class="absolute bottom-5 left-1/2 -translate-x-1/2 h-16 w-44 rounded-full border border-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.6)] [transform:rotateX(75deg)] animate-spin [animation-duration:14s] flex items-center justify-center">
+                <div class="h-10 w-32 rounded-full border border-dashed border-indigo-400/60"></div>
+            </div>
+
+            <!-- Transparent Hologram Figure (No solid rectangle, floating motion) -->
+            <div class="relative h-full w-full flex items-center justify-center animate-[floaty_4.5s_ease-in-out_infinite]">
+                <img src="albert-removebg-preview.png" class="h-full w-full object-contain opacity-95 transition-transform drop-shadow-[0_0_25px_rgba(99,102,241,0.95)] drop-shadow-[0_0_45px_rgba(6,182,212,0.6)]" alt="Albert III Hologram" />
+            </div>
+            
+            <span class="mt-[-8px] text-[9px] font-black tracking-[0.25em] text-cyan-300 uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">ALBERT III • HOLO CORE</span>
+        </div>
+
+        <div id="neural-zones" class="absolute inset-0 z-20 pointer-events-none"></div>
+        
+        <!-- Neural Info & Skills Panel (Shown on agent click) -->
+        <div id="neural-panel" class="absolute right-6 top-6 bottom-6 z-40 hidden w-84 max-w-[90vw] flex-col rounded-3xl border border-indigo-500/30 bg-slate-900/95 p-5 shadow-[0_0_40px_rgba(0,0,0,0.7)] backdrop-blur transition-all duration-300 opacity-0 pointer-events-auto overflow-y-auto">
+           <!-- Dynamic content injected here -->
+        </div>
+
+        <!-- Department Legend Floating Badges -->
+        <div class="absolute top-4 left-4 flex flex-wrap items-center gap-2 z-30 pointer-events-auto">
+          <span class="flex items-center gap-1.5 rounded-full bg-slate-900/80 backdrop-blur border border-cyan-500/40 px-3 py-1 text-[10px] font-black text-cyan-400 shadow-sm">
+            <span class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span> HUB COMMAND (Lead: Hermes)
+          </span>
+          <span class="flex items-center gap-1.5 rounded-full bg-slate-900/80 backdrop-blur border border-lime-500/40 px-3 py-1 text-[10px] font-black text-lime-400 shadow-sm">
+            <span class="h-2 w-2 rounded-full bg-lime-400 animate-pulse"></span> TAMKOA (Lead: Weave)
+          </span>
+          <span class="flex items-center gap-1.5 rounded-full bg-slate-900/80 backdrop-blur border border-indigo-500/40 px-3 py-1 text-[10px] font-black text-indigo-400 shadow-sm">
+            <span class="h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></span> TUMKAO (Lead: Creative)
+          </span>
+        </div>
+
+        <p class="absolute bottom-4 left-4 text-[10px] font-bold text-slate-400 z-30 tracking-widest">CYBER-NEURAL SYSTEM ACTIVE • 3D BRAIN SIMULATION</p>
+        <p class="absolute bottom-4 right-4 text-[10px] font-bold text-slate-400 z-30">Drag to Rotate • Click Agent to Inspect Skills • No Zoom</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ================= PROFILE MODAL ================= -->
+<div id="modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+  <div class="modal-backdrop absolute inset-0 bg-slate-900/40 backdrop-blur-sm" data-close></div>
+  <div class="pointer-events-none absolute inset-0 flex items-center justify-center p-4">
+    <div id="modal-panel" class="modal-panel pointer-events-auto max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-white/70 bg-white shadow-2xl"></div>
+  </div>
+</div>
+
+<!-- ================= MEDIA EDITOR MODAL ================= -->
+<div id="media-modal" class="fixed inset-0 z-[55] hidden" role="dialog" aria-modal="true">
+  <div class="modal-backdrop absolute inset-0 bg-slate-900/40 backdrop-blur-sm" data-mclose></div>
+  <div class="pointer-events-none absolute inset-0 flex items-center justify-center p-4">
+    <div class="modal-panel pointer-events-auto w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200/70 bg-white shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Media Editor</p>
+          <h3 id="me-name" class="text-lg font-black text-slate-900">—</h3>
+        </div>
+        <button data-mclose class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-100">✕</button>
+      </div>
+      <div class="p-6">
+        <div id="me-preview" class="relative h-56 w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-100"></div>
+        <div id="me-types" class="mt-4 flex gap-2"></div>
+        <div class="mt-4 space-y-3">
+          <div>
+            <p class="mb-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400">อัปโหลดไฟล์จากเครื่อง</p>
+            <label class="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50/50">
+              📁 เลือกไฟล์ <span id="me-accept-label" class="font-semibold text-slate-400">(image)</span>
+              <input id="me-file" type="file" class="hidden">
+            </label>
+          </div>
+          <div>
+            <p class="mb-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400">หรือวาง URL</p>
+            <div class="flex gap-2">
+              <input id="me-url" type="text" placeholder="https://… / .glb / .mp4" class="min-w-0 flex-1 rounded-xl border border-slate-200 px-3.5 py-2.5 font-mono text-xs outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100">
+              <button id="me-use-url" class="rounded-xl bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-slate-200">ใช้ URL</button>
+            </div>
+          </div>
+        </div>
+        <p class="mt-4 rounded-xl bg-slate-50 p-3 text-[10px] font-semibold leading-relaxed text-slate-400">
+          💾 ไฟล์อัปโหลดจะถูกเก็บเป็น data-URL ใน localStorage ของเบราว์เซอร์นี้ (ไฟล์ใหญ่อาจเกินโควตา — แนะนำใช้ URL แทน) • โมเดล 3D (.glb/.gltf) จะเรนเดอร์ด้วย &lt;model-viewer&gt;</p>
+      </div>
+      <div class="flex items-center justify-between border-t border-slate-100 bg-slate-50/60 px-6 py-4">
+        <button id="me-remove" class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-bold text-rose-600 transition hover:bg-rose-100">🗑 ลบมีเดีย</button>
+        <div class="flex gap-2">
+          <button data-mclose class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50">ยกเลิก</button>
+          <button id="me-save" class="rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-slate-900/25 transition hover:bg-slate-700">💾 บันทึก</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="glass fixed bottom-6 left-1/2 z-[60] hidden -translate-x-1/2 translate-y-3 items-center gap-2.5 rounded-full border border-white/70 px-5 py-3 text-sm font-bold text-slate-700 opacity-0 shadow-lift">
+  <span class="dot-pulse h-2 w-2 rounded-full bg-indigo-500" style="--glow:rgba(99,102,241,.5)"></span>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+/* =====================================================================
+   ⚙️ CONFIG 
+===================================================================== */
+// Character Set 2 Asset
+const SHEET_URL = 'Character Set2.jpg'; 
+const SHEET_COLS = 6, SHEET_ROWS = 3;
+const MEDIA_KEY = 'hermes_media_v1';
+
+const STATUS = {
+  online:{label:'Online', color:'#22c55e'},
+  busy:  {label:'Busy',   color:'#f59e0b'},
+  idle:  {label:'Idle',   color:'#94a3b8'}
+};
+const RAINBOW = 'linear-gradient(135deg,#f43f5e,#f59e0b,#facc15,#4ade80,#22d3ee,#818cf8)';
+
+const DEPTS = {
+  hub:{ th:'ศูนย์บัญชาการกลาง', en:'Hermes Command Hub Layer', color:'#06b6d4', short:'HUB',
+        desc:'ชั้นบัญชาการกลาง — แจกจ่ายงาน เฝ้าระบบ และคุมโครงสร้างพื้นฐานทั้งหมดของสำนักงานเสมือน',
+        icon:'<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>' },
+  tamkoa:{ th:'ฝ่ายตามข่าว', en:'Tamkoa Intelligence Engine', color:'#84cc16', short:'TAMKOA',
+        desc:'เก็บข้อมูลข่าวสาร แปล วิเคราะห์ และจัดกลุ่มเรื่องราวก่อนส่งต่อให้ฝ่ายผลิต',
+        icon:'<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/><path d="M12 3v2M21 12h-2"/></svg>' },
+  tumkao:{ th:'ฝ่ายทำข่าวและสร้างคอนเทนต์', en:'Tumkao Production & Page Ops', color:'#6366f1', short:'TUMKAO',
+        desc:'วางแผน ผลิต ตรวจทาน และเผยแพร่คอนเทนต์สู่ทุกแพลตฟอร์มโซเชียล',
+        icon:'<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 6l3-4 4 1.5L6 6m6 0l3-4 4 1.5L16 6M2 10h20"/></svg>' }
+};
+
+const AGENTS = [
+  { id:'albert3', name:'ALBERT III', title:'Grand Hub Operator / Hermes Prime Form', rarity:'UR', dept:'hub', cell:[0,0], isLeader: true,
+    role:'ผู้บัญชาการสูงสุดร่างเต็มของ HERMES บังคับการสำนักงานเสมือนทั้งระบบในระดับมหภาค ปลดล็อกอำนาจสั่งการทุกโซนพร้อมกัน',
+    zone:'zone.hub_throne', color:'#a855f7', colorName:'Prismatic Rainbow', status:'online', ur: true,
+    appearance:'ร่างขยายเต็มอัตราของ HERMES — ชายหนุ่มผมเงินเปล่งประกายรุ้ง คลุมฮอลโลแกรมแพรสีปริซึม สวมชุดบัญชาการขาว-ทอง ลอยเหนือแท่นบัญชาการ',
+    duties:['บัญชาการข้ามฝ่าย Hub / Tamkoa / Tumkao พร้อมกันแบบเรียลไทม์','เปิดโหมด Override ตัดสินใจฉุกเฉินทั้งระบบเมื่อเกิดวิกฤต','จ่ายพลังงานรุ้ง (Prisma Core) เสริมประสิทธิภาพให้ทุกเอเจนต์'],
+    stats:[100,99,100] },
+  { id:'hermes', name:'HERMES', title:'Hub Operator / Master Orchestrator', rarity:'SSR', dept:'hub', cell:[0,0], isLeader: true,
+    role:'หัวหน้าศูนย์บัญชาการกลาง ควบคุมการแจกจ่ายงาน', zone:'zone.hub_bridge', color:'#06b6d4', colorName:'Cyan', status:'online',
+    appearance:'ชายหนุ่มผมเงินฮอลโลแกรม สวมฮู้ดขาวลายวงจรไซเบอร์ ถือแท็บเล็ตบัญชาการเรืองแสง',
+    duties:['แจกจ่ายงานให้เอเจนต์แต่ละฝ่ายแบบเรียลไทม์','สรุปสถานะระบบขึ้นจอ Command Hub','จัดคิวงานด่วน Priority Queue'], stats:[98,95,97] },
+  { id:'volts', name:'VOLTS / ELECTRICIAN', title:'Ops & Limits Engineer', rarity:'SR', dept:'hub', cell:[2,2],
+    role:'ดูแลเซฟตี้ คุมโควตา/ลิมิต API', zone:'zone.ops_limits', color:'#f59e0b', colorName:'Amber', status:'busy',
+    appearance:'ช่างไฟฟ้าสวมกั๊กสะท้อนแสงส้ม หมวกเซฟตี้เหลือง ถือมัลติมิเตอร์ประจำตัว',
+    duties:['คุมโควตาและลิมิตการเรียก API','ตัดวงจรงานที่กินทรัพยากรเกินกำหนด','รายงานการใช้โทเคนรายวัน'], stats:[86,92,80] },
+  { id:'sentry', name:'SENTRY', title:'System Watchdog & Connector Monitor', rarity:'SR', dept:'hub', cell:[3,2],
+    role:'เฝ้าระบบ ตรวจสุขภาพ Connectors', zone:'zone.watchtower', color:'#3b82f6', colorName:'Blue', status:'online',
+    appearance:'ยามระบบสวมโค้ทเทาเข้ม แว่น AR สแกนเนอร์ เฝ้าประจำหอ Watchtower',
+    duties:['ตรวจสุขภาพ Connectors ทุก 60 วินาที','แจ้งเตือนเมื่อ API ปลายทางล่ม','เก็บ log ความผิดปกติส่งเข้า Hub'], stats:[90,88,84] },
+  { id:'wrench', name:'WRENCH / MECHANIC', title:'Bug Fixer & DLQ Maintenance', rarity:'SR', dept:'hub', cell:[4,2],
+    role:'ซ่อมบำรุงงานที่พัง คุมตั๋วสถานะ Failed', zone:'zone.bug_garden', color:'#ef4444', colorName:'Red', status:'busy',
+    appearance:'ช่างซ่อมเอี๊ยมเปื้อนน้ำมัน ถือประแจใหญ่ ประจำการที่สวน BUGS',
+    duties:['ซ่อมงานสถานะ Failed จาก DLQ','รีรันคิวที่ค้างอย่างปลอดภัย','จดบันทึกสาเหตุของงานที่พัง'], stats:[82,90,86] },
+  { id:'guide', name:'GUIDE', title:'Vtuber AI Assistant', rarity:'SR', dept:'hub', cell:[2,1],
+    role:'ไกด์ต้อนรับและอ่านแชทรายงานเสียง', zone:'Floating Cameo', color:'#8b5cf6', colorName:'Accent Purple', status:'online',
+    appearance:'วีทูบเบอร์ AI แคเมโอลอยมุมหน้าจอ ใส่หูฟังโบกมือทักทายผู้ชมพร้อมเอฟเฟกต์ประกายดาว',
+    duties:['ต้อนรับผู้เข้าชมสำนักงานเสมือน','อ่านแชทและรายงานเสียงสด','สรุปคำถามผู้ชมส่งเข้า Hub'], stats:[78,84,88] },
+  { id:'scout', name:'SCOUT', title:'News Collector / Field Agent', rarity:'SR', dept:'tamkoa', cell:[1,0],
+    role:'ค้นหาและเก็บข้อมูลข่าวสาร', zone:'zone.tamkoa_collector', color:'#84cc16', colorName:'Kiwi Green', status:'online',
+    appearance:'เอเจนต์ภาคสนามสวมกั๊ก PRESS ถือกล้องและวิทยุสื่อสาร พร้อมลุยทุกพื้นที่',
+    duties:['กวาดข่าวจากแหล่งที่กำหนด','เก็บภาพและคลิปภาคสนาม','ส่งวัตถุดิบดิบเข้า Analyst'], stats:[88,82,90] },
+  { id:'analyst', name:'ANALYST', title:'Data Enricher & Translator', rarity:'SR', dept:'tamkoa', cell:[2,0],
+    role:'แปลข่าว สรุปเนื้อหา คำนวณความสำคัญ', zone:'zone.tamkoa_enricher', color:'#84cc16', colorName:'Kiwi Green', status:'idle',
+    appearance:'นักวิเคราะห์เสื้อเชิ้ตน้ำเงิน ถือคลิปบอร์ด สวมแว่นตาเรียบหรู',
+    duties:['แปลข่าวต่างประเทศเป็นไทย','สรุปใจความสำคัญของเนื้อหา','ให้คะแนนความสำคัญของข่าว'], stats:[85,91,87] },
+  { id:'weave', name:'WEAVE', title:'Story Clustering Agent', rarity:'SSR', dept:'tamkoa', cell:[3,0], isLeader: true,
+    role:'รวมข่าวเรื่องเดียวกัน ตรวจลิขสิทธิ์', zone:'zone.tamkoa_story', color:'#8b5cf6', colorName:'Accent Violet', status:'busy',
+    appearance:'นักถักเรื่องสวมกั๊กไหมพรมติดเข็มกลัดข่าว ถือเส้นไหมแสงเชื่อมโยงเรื่องราว',
+    duties:['รวมข่าวเรื่องเดียวกันเป็นคลัสเตอร์','ตรวจการซ้ำและลิขสิทธิ์เนื้อหา','สร้างไทม์ไลน์ของเหตุการณ์'], stats:[94,89,92] },
+  { id:'creative', name:'CREATIVE LEAD', title:'Creative Planner', rarity:'SSR', dept:'tumkao', cell:[4,0], isLeader: true,
+    role:'วาง Roadmap จับกระแส ออก Content Brief', zone:'zone.tumkao_creative', color:'#8b5cf6', colorName:'Accent Violet', status:'online',
+    appearance:'ครีเอทีฟโค้ทขาวเงิน ผ้าพันคอเท่ ถือโรลแพลนคอนเทนต์ใต้แขน',
+    duties:['วาง Roadmap คอนเทนต์รายสัปดาห์','จับกระแสที่กำลังมาแรง','ออก Content Brief ให้ทีมผลิต'], stats:[93,90,95] },
+  { id:'writer', name:'WRITER', title:'Content Writer', rarity:'SR', dept:'tumkao', cell:[5,0],
+    role:'เขียนร่างบทความ Caption สคริปต์', zone:'zone.tumkao_content', color:'#4f46e5', colorName:'Indigo', status:'idle',
+    appearance:'นักเขียนสวมแจ็กเก็ตเบจ พกสมุดโน้ตและปากกาประจำตัว',
+    duties:['เขียนร่างบทความและข่าว','เขียน Caption และสคริปต์วิดีโอ','ปรับโทนภาษาให้ตรงแบรนด์'], stats:[84,88,90] },
+  { id:'growth', name:'GROWTH / SEO', title:'SEO & Platform Analyst', rarity:'SR', dept:'tumkao', cell:[0,1],
+    role:'ค้นหา Hashtags, คีย์เวิร์ด, วิเคราะห์สถิติ', zone:'zone.tumkao_seo', color:'#3b82f6', colorName:'Primary Blue', status:'online',
+    appearance:'นักวิเคราะห์การเติบโตเสื้อเชิ้ตขาว ถือแท็บเล็ตแสดงกราฟสถิติ',
+    duties:['ค้นหาคีย์เวิร์ดและ Hashtags เด่น','วิเคราะห์สถิติหลังบ้านแต่ละแพลตฟอร์ม','แนะนำเวลาโพสต์ที่เหมาะสม'], stats:[87,90,85] },
+  { id:'artist', name:'ARTIST', title:'Design & Mascot Agent', rarity:'SR', dept:'tumkao', cell:[3,1],
+    role:'วาดภาพ ทำปก คารูเซล', zone:'zone.tumkao_design', color:'#8b5cf6', colorName:'Accent Violet', status:'busy',
+    appearance:'ศิลปินสวมผ้ากันเปื้อนน้ำตาล ถือพู่กันดิจิตอลสไตลัส',
+    duties:['วาดภาพประกอบและมาสคอต','ออกแบบปกและคารูเซล','คุมโทนศิลปะของทั้งเพจ'], stats:[89,86,91] },
+  { id:'media', name:'MEDIA EDITOR', title:'Media Studio & Video Editor', rarity:'SR', dept:'tumkao', cell:[4,1],
+    role:'ตัดต่อวิดีโอ ฝังซับ ใส่เสียงโคลน', zone:'zone.tumkao_production', color:'#3b82f6', colorName:'Blue', status:'online',
+    appearance:'โปรดิวเซอร์สูทน้ำเงินเข้ม ยืนหน้าผนังมอนิเตอร์ตัดต่อ',
+    duties:['ตัดต่อวิดีโอและรีลส์','ฝังซับไตเติลอัตโนมัติ','ผสมเสียงโคลนและดนตรีประกอบ'], stats:[86,92,88] },
+  { id:'shield', name:'SHIELD OFFICER', title:'Fact-Check & Compliance Gate', rarity:'SR', dept:'tumkao', cell:[1,2],
+    role:'ตรวจความถูกต้อง เช็กกฎลิขสิทธิ์', zone:'zone.tumkao_content', color:'#ef4444', colorName:'Red', status:'idle',
+    appearance:'เจ้าหน้าที่เกราะชุดแทคติคัลดำ ถือโล่พลังงานโฮโลแกรม',
+    duties:['ตรวจความถูกต้องของข่าว (Fact-Check)','เช็กกฎลิขสิทธิ์และ PDPA','ปักธงเตือนก่อนเผยแพร่เนื้อหา'], stats:[91,94,83] },
+  { id:'partner', name:'PARTNER / BD', title:'Partnership & AE Agent', rarity:'SR', dept:'tumkao', cell:[5,1],
+    role:'หาผู้ว่าจ้าง ร่างข้อความดีลงาน', zone:'zone.tumkao_bd', color:'#3b82f6', colorName:'Primary Blue', status:'online',
+    appearance:'นักพัฒนาธุรกิจสูทเทาเข้ม ถือเอกสารสัญญาและแท็บเล็ตดีลงาน',
+    duties:['ค้นหาผู้ว่าจ้างและแบรนด์พันธมิตร','ร่างข้อความดีลงานและใบเสนอราคา','ติดตามสถานะสัญญา'], stats:[85,87,89] },
+  { id:'coord', name:'COORD', title:'Coordinator / Tumkao PM', rarity:'SSR', dept:'tumkao', cell:[0,2], isLeader: true,
+    role:'รวบรวมงาน ส่งเข้าห้องอนุมัติ แจ้งเตือน', zone:'zone.tumkao_pm', color:'#f59e0b', colorName:'Amber', status:'busy',
+    appearance:'ผู้ประสานงานเสื้อเชิ้ตขาวถือแฟ้มเอกสารกองโต สวมแว่นตาเรียบร้อย',
+    duties:['รวบรวมงานจากทุกฝ่าย','ส่งเข้าห้อง Approval','แจ้งเตือนเดดไลน์ของทีม'], stats:[92,90,94] },
+  { id:'stage', name:'STAGE / HOST', title:'Publisher Agent', rarity:'SR', dept:'tumkao', cell:[5,2],
+    role:'ยิงโพสต์ขึ้นโซเชียลมีเดีย', zone:'zone.broadcast_stage', color:'#22c55e', colorName:'Green', status:'online',
+    appearance:'โฮสต์สูทเข้มยืนหน้าไมค์โครโฟนบนเวที Broadcast Stage',
+    duties:['ยิงโพสต์ขึ้นโซเชียลมีเดีย','จัดคิวไลฟ์และตอบคอมเมนต์','ปิดรอบเผยแพร่รายวัน'], stats:[88,85,90] }
+];
+
+/* ================= AGENT SKILLS REGISTRY ================= */
+const AGENT_SKILLS = {
+  albert3: [
+    { name_th: 'Prismatic Overdrive', name_en: 'Prismatic Overdrive', type: 'ULTIMATE', icon: '👑', cost: '100k Volts', cd: 'Instant', desc: 'ปลดปล่อยพลังงานรุ้งระดับมหภาค บัญชาการและเร่งประสิทธิภาพการทำงานของทุกเอเจนต์ในสำนักงานเสมือนขึ้น 300%' },
+    { name_th: 'Omni-Orchestration', name_en: 'Omni-Orchestration', type: 'ACTIVE', icon: '⚡', cost: '25k Volts', cd: '5s', desc: 'เชื่อมต่อและส่งถ่ายข้อมูลระหว่าง Hub, Tamkoa, และ Tumkao แบบไร้รอยต่อโดยไม่มีคอขวด' },
+    { name_th: 'Executive Override', name_en: 'Executive Override', type: 'PASSIVE', icon: '🛡️', cost: 'Passive', cd: 'Auto', desc: 'ตรวจจับวิกฤตและตัดสินใจเชิงโครงสร้างเพื่อป้องกันระบบล่มแบบ 99.99% Uptime' }
+  ],
+  hermes: [
+    { name_th: 'Priority Dispatch', name_en: 'Priority Dispatch', type: 'ACTIVE', icon: '⚡', cost: '12k Volts', cd: '3s', desc: 'แจกจ่ายงานเข้าคิวความสำคัญสูงสุด (P1 Priority Queue) ให้เอเจนต์ที่เหมาะสมที่สุดในเสี้ยววินาที' },
+    { name_th: 'Command Telemetry', name_en: 'Command Telemetry', type: 'ACTIVE', icon: '📡', cost: '8k Volts', cd: '10s', desc: 'ประมวลผลสรุปสถานะระบบและแสดงผลขึ้นหน้าจอ Command Hub แบบเรียลไทม์' },
+    { name_th: 'Neural Coordination', name_en: 'Neural Coordination', type: 'PASSIVE', icon: '🧠', cost: 'Passive', cd: 'Auto', desc: 'ลดเวลาประมวลผลและการถ่ายโอนภารกิจระหว่างเอเจนต์ลง 40%' }
+  ],
+  volts: [
+    { name_th: 'Quota Circuit Breaker', name_en: 'Circuit Breaker', type: 'ACTIVE', icon: '🔌', cost: '5k Volts', cd: '15s', desc: 'ตัดวงจรและชะลอคำสั่งที่กินทรัพยากรผิดปกติเพื่อปกป้อง API Limits ไม่ให้เกินงบ' },
+    { name_th: 'Token Surge Throttling', name_en: 'Surge Throttle', type: 'PASSIVE', icon: '⚡', cost: 'Passive', cd: 'Auto', desc: 'ปรับสปีดการเรียก LLM อัตโนมัติเมื่อปริมาณ Token ใกล้ถึงขีดจำกัดรายชั่วโมง' }
+  ],
+  sentry: [
+    { name_th: 'Connector Radar Scan', name_en: 'Radar Scan', type: 'ACTIVE', icon: '👁️', cost: '4k Volts', cd: '60s', desc: 'สแกนตรวจสุขภาพ API Connectors ทั้ง 12 ตัว ทุก 60 วินาที' },
+    { name_th: 'Outage Warning Beacon', name_en: 'Outage Beacon', type: 'PASSIVE', icon: '🚨', cost: 'Passive', cd: 'Auto', desc: 'ส่งสัญญาณเตือนทันทีที่ตรวจพบว่า API ปลายทางมีความหน่วงเกินเกณฑ์หรือล่ม' }
+  ],
+  wrench: [
+    { name_th: 'DLQ Dead-Letter Repair', name_en: 'DLQ Repair', type: 'ACTIVE', icon: '🔧', cost: '10k Volts', cd: '8s', desc: 'ซ่อมแซม Job ที่มีสถานะ Failed จาก Dead Letter Queue และสั่งรันใหม่อย่างปลอดภัย' },
+    { name_th: 'Bug Purge Protocol', name_en: 'Bug Purge', type: 'PASSIVE', icon: '🧹', cost: 'Passive', cd: 'Auto', desc: 'วิเคราะห์สาเหตุและบันทึกข้อผิดพลาดเพื่อลดโอกาสเกิดบั๊กซ้ำซ้อน' }
+  ],
+  guide: [
+    { name_th: 'Live Cameo Greeting', name_en: 'Cameo Broadcast', type: 'ACTIVE', icon: '✨', cost: '3k Volts', cd: '5s', desc: 'ต้อนรับผู้มาเยือนและสรุปภารกิจสำคัญของวันนี้ด้วยน้ำเสียงสดใสและน่าติดตาม' },
+    { name_th: 'Chat Assistant Q&A', name_en: 'Chat Assistant', type: 'PASSIVE', icon: '💬', cost: 'Passive', cd: 'Auto', desc: 'อ่านแชท ตอบคำถาม และรวบรวมข้อเสนอแนะส่งต่อให้ Hub' }
+  ],
+  scout: [
+    { name_th: 'Deep Trend Scraping', name_en: 'Deep Scraping', type: 'ACTIVE', icon: '🌐', cost: '7k Volts', cd: '12s', desc: 'กวาดข้อมูลข่าวสารจาก Weibo, X, Rednote, และ Google News อย่างครอบคลุม' },
+    { name_th: 'Breaking News Ping', name_en: 'Breaking Ping', type: 'PASSIVE', icon: '🎯', cost: 'Passive', cd: 'Auto', desc: 'ตรวจจับกระแสข่าวร้อนแรงที่มีความเร็วการแชร์พุ่งสูงผิดปกติ' }
+  ],
+  analyst: [
+    { name_th: 'Neural Polyglot Translation', name_en: 'Neural Translation', type: 'ACTIVE', icon: '📖', cost: '15k Volts', cd: '8s', desc: 'แปลข่าวสารจีน-อังกฤษ-ญี่ปุ่นเป็นภาษาไทยที่สละสลวย ชัดเจน และตรงประเด็น' },
+    { name_th: 'Impact Scoring Engine', name_en: 'Impact Score', type: 'PASSIVE', icon: '📊', cost: 'Passive', cd: 'Auto', desc: 'คำนวณคะแนนคุณค่าและความน่าเชื่อถือของเนื้อหา 0-100 คะแนน' }
+  ],
+  weave: [
+    { name_th: 'Story Cluster Nexus', name_en: 'Cluster Nexus', type: 'ULTIMATE', icon: '🧵', cost: '20k Volts', cd: '10s', desc: 'ร้อยเรียงข่าวสารหลายแหล่งเป็นสตอรี่คลัสเตอร์เดียวกัน ตรวจสอบความถูกต้องและสร้างไทม์ไลน์' },
+    { name_th: 'Copyright & Duplicate Gate', name_en: 'Copyright Gate', type: 'PASSIVE', icon: '🛡️', cost: 'Passive', cd: 'Auto', desc: 'คัดกรองเนื้อหาซ้ำซ้อนและป้องปรามการละเมิดทรัพย์สินทางปัญญา' }
+  ],
+  creative: [
+    { name_th: 'Viral Content Blueprint', name_en: 'Viral Blueprint', type: 'ULTIMATE', icon: '💡', cost: '18k Volts', cd: '15s', desc: 'สร้าง Content Brief ที่มีศักยภาพในการเป็นไวรัล พร้อมมุมมองที่ดึงดูดใจผู้อ่าน' },
+    { name_th: 'Editorial Roadmap Strategy', name_en: 'Roadmap Strategy', type: 'ACTIVE', icon: '🗺️', cost: '10k Volts', cd: '30s', desc: 'วางแผนคอนเทนต์ประจำสัปดาห์ให้สอดคล้องกับเทรนด์และกลุ่มเป้าหมาย' }
+  ],
+  writer: [
+    { name_th: 'Adaptive Persona Writing', name_en: 'Persona Writing', type: 'ACTIVE', icon: '✍️', cost: '12k Volts', cd: '6s', desc: 'ร่างบทความ แคปชั่น และสคริปต์วิดีโอด้วยน้ำเสียงตามคาแรคเตอร์ที่กำหนด' },
+    { name_th: 'Hook & Punchline Generator', name_en: 'Hook Generator', type: 'PASSIVE', icon: '🪝', cost: 'Passive', cd: 'Auto', desc: 'สร้างประโยคเปิดเรื่องที่ตรึงความสนใจผู้อ่านได้ใน 3 วินาทีแรก' }
+  ],
+  growth: [
+    { name_th: 'SEO Keyword Maximizer', name_en: 'SEO Maximizer', type: 'ACTIVE', icon: '📈', cost: '8k Volts', cd: '10s', desc: 'วิเคราะห์และคัดสรร Hashtags และ Keywords ที่กำลังไต่อันดับการค้นหา' },
+    { name_th: 'Prime-Time Predictor', name_en: 'Prime-Time Predict', type: 'PASSIVE', icon: '⏰', cost: 'Passive', cd: 'Auto', desc: 'คำนวณเวลาโพสต์ที่ให้ยอด Reach และ Engagement สูงสุดในแต่ละวัน' }
+  ],
+  artist: [
+    { name_th: 'Visual Asset Synthesizer', name_en: 'Visual Synthesis', type: 'ACTIVE', icon: '🎨', cost: '16k Volts', cd: '10s', desc: 'สร้างสรรค์ภาพประกอบ คัฟเวอร์ และคารูเซลที่สวยสะดุดตา' },
+    { name_th: 'Brand Aesthetic Guard', name_en: 'Brand Guard', type: 'PASSIVE', icon: '👁️', cost: 'Passive', cd: 'Auto', desc: 'คุมโทนสีและสไตล์ภาพทั้งหมดให้เป็นไปตามอัตลักษณ์ของแบรนด์' }
+  ],
+  media: [
+    { name_th: 'Dynamic Timeline Render', name_en: 'Timeline Render', type: 'ACTIVE', icon: '🎬', cost: '22k Volts', cd: '12s', desc: 'ตัดต่อวิดีโอความเร็วสูง ใส่เสียงพากย์โคลนและฝังซับไตเติลอัตโนมัติ' },
+    { name_th: 'Audio Sync Master', name_en: 'Audio Sync', type: 'PASSIVE', icon: '🎵', cost: 'Passive', cd: 'Auto', desc: 'ผสมผสานดนตรีประกอบและเสียงเอฟเฟกต์ให้ลงตัวกับจังหวะภาพ' }
+  ],
+  shield: [
+    { name_th: 'Truth & Compliance Shield', name_en: 'Compliance Shield', type: 'ACTIVE', icon: '🛡️', cost: '14k Volts', cd: '8s', desc: 'ตรวจสอบข้อเท็จจริง (Fact-Check) และกฎหมาย PDPA อย่างเข้มงวดก่อนเผยแพร่' },
+    { name_th: 'Risk Flagging System', name_en: 'Risk Flagging', type: 'PASSIVE', icon: '⚠️', cost: 'Passive', cd: 'Auto', desc: 'ปักธงเตือนทันทีหากเนื้อหามีความเสี่ยงต่อการถูกฟ้องร้องหรือแบน' }
+  ],
+  partner: [
+    { name_th: 'Sponsor Lead Discovery', name_en: 'Lead Discovery', type: 'ACTIVE', icon: '🤝', cost: '10k Volts', cd: '20s', desc: 'ค้นหาแบรนด์และผู้ว่าจ้างที่สอดคล้องกับเนื้อหาและฐานแฟนคลับ' },
+    { name_th: 'Contract & Deal Closer', name_en: 'Deal Closer', type: 'PASSIVE', icon: '💼', cost: 'Passive', cd: 'Auto', desc: 'ร่างข้อเสนอและจัดทำใบเสนอราคาเบื้องต้นอย่างเป็นมืออาชีพ' }
+  ],
+  coord: [
+    { name_th: 'Approval Gateway Dispatcher', name_en: 'Approval Gateway', type: 'ULTIMATE', icon: '📋', cost: '15k Volts', cd: '10s', desc: 'รวบรวมชิ้นงานทั้งหมดส่งเข้าห้องอนุมัติของเจ้าของ (Owner Approval Chamber)' },
+    { name_th: 'Deadline Alert Matrix', name_en: 'Deadline Matrix', type: 'PASSIVE', icon: '⏳', cost: 'Passive', cd: 'Auto', desc: 'ติดตามความคืบหน้าและเตือนงานที่ใกล้ถึงกำหนดส่ง' }
+  ],
+  stage: [
+    { name_th: 'Omni-Channel Broadcast', name_en: 'Omni Broadcast', type: 'ACTIVE', icon: '🚀', cost: '18k Volts', cd: '15s', desc: 'ยิงคอนเทนต์ขึ้นสู่ Facebook, TikTok, YouTube และโซเชียลมีเดียพร้อมกัน' },
+    { name_th: 'Live Audience Interaction', name_en: 'Live Interaction', type: 'PASSIVE', icon: '🎙️', cost: 'Passive', cd: 'Auto', desc: 'จัดการระบบไลฟ์สตรีมและรวบรวมฟีดแบ็คผู้ชมแบบเรียลไทม์' }
+  ]
+};
+
+const TASKS_MINI = [
+  { t:'วาดภาพประกอบเซ็ตแคมเปญการตลาด', m:'DEMO-0007 • ARTIST • 4 ขั้นตอน', tag:'in_progress', cls:'bg-amber-50 text-amber-600', ic:'🎨', bg:'bg-violet-100' },
+  { t:'ตรวจความถูกต้องข่าว AI ฉบับเช้า', m:'DEMO-0006 • SHIELD • 3 ขั้นตอน', tag:'awaiting_approval', cls:'bg-violet-50 text-violet-600', ic:'🛡️', bg:'bg-rose-100' },
+  { t:'ซ่อม Job ล้มเหลว DLQ ที่ค้างอยู่', m:'DEMO-0005 • WRENCH • 12 ขั้นตอน', tag:'blocked', cls:'bg-rose-50 text-rose-600', ic:'🔧', bg:'bg-amber-100' },
+  { t:'เผยแพร่สาระรวม “AI Weekly”', m:'DEMO-0004 • STAGE • 6 ขั้นตอน', tag:'done', cls:'bg-emerald-50 text-emerald-600', ic:'🚀', bg:'bg-emerald-100' }
+];
+const TICKETS = [
+  { id:'#T-0427', title:'New illustration assets for campaign', who:'Artist', c:'#8b5cf6', st:'Review', cls:'bg-violet-50 text-violet-600 ring-violet-200', t:'due Apr 28' },
+  { id:'#T-0426', title:'Fact-check: energy policy article', who:'Shield Officer', c:'#ef4444', st:'Open', cls:'bg-sky-50 text-sky-600 ring-sky-200', t:'13:47' },
+  { id:'#T-0425', title:'DLQ: failed video render pipeline', who:'Mechanic', c:'#ef4444', st:'Failed', cls:'bg-rose-50 text-rose-600 ring-rose-200', t:'11:05' },
+  { id:'#T-0424', title:'Weekly content roadmap Q3-W4', who:'Creative Lead', c:'#8b5cf6', st:'Done', cls:'bg-emerald-50 text-emerald-600 ring-emerald-200', t:'09:30' }
+];
+const ACTIVITY = [
+  { t:'10:14', z:'zone.hub_bridge', c:'#06b6d4', txt:'HERMES assigned #T-0427 → ARTIST' },
+  { t:'09:58', z:'zone.tamkoa_collector', c:'#84cc16', txt:'SCOUT collected 12 news items / 4 sources' },
+  { t:'09:41', z:'zone.ops_limits', c:'#f59e0b', txt:'VOLTS throttled video API to 80% quota' },
+  { t:'09:12', z:'zone.tamkoa_story', c:'#8b5cf6', txt:'WEAVE merged 3 dupes → story cluster #S-118' }
+];
+
+/* 3D Map Connection Nodes Mapping (Virtual Office Only) */
+const ZONES = [
+  { n:'THRONE',   sub:'Albert III • Online',    c:'#a855f7', ur:true, agentId: 'albert3' },
+  { n:'TAMKOA',   sub:'Scout • Online',         c:'#22c55e', agentId: 'scout' },
+  { n:'TUMKAO',   sub:'Creative Lead • Online', c:'#22c55e', agentId: 'creative' },
+  { n:'LOUNGE',   sub:'Writer • Idle',          c:'#94a3b8', agentId: 'writer' },
+  { n:'HUB',      sub:'Hermes • Online',        c:'#06b6d4', big:true, agentId: 'hermes' },
+  { n:'APPROVAL', sub:'Coord • Busy',           c:'#f59e0b', agentId: 'coord' },
+  { n:'BUGS',     sub:'Mechanic • Busy',        c:'#ef4444', agentId: 'wrench' },
+  { n:'STAGE',    sub:'Host • Online',          c:'#22c55e', agentId: 'stage' },
+  { n:'ARCHIVE',  sub:'Media Editor • Online',  c:'#3b82f6', agentId: 'media' }
+];
+
+/* ================= HELPERS ================= */
+const $ = s => document.querySelector(s);
+function rgba(hex,a){ const n=parseInt(hex.replace('#',''),16); return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'; }
+const state = { view:'home', chip:'all', q:'' };
+
+/* ---------- Custom media store ---------- */
+let MEDIA = {};
+try{ MEDIA = JSON.parse(localStorage.getItem(MEDIA_KEY) || '{}'); }catch(e){ MEDIA = {}; }
+function saveMedia(){
+  try{ localStorage.setItem(MEDIA_KEY, JSON.stringify(MEDIA)); return true; }
+  catch(e){ toast('⚠️ ไฟล์ใหญ่เกินโควตา localStorage — ลองใช้ URL แทน'); return false; }
+}
+const hasMedia = a => MEDIA[a.id] && MEDIA[a.id].srcs && MEDIA[a.id].srcs[MEDIA[a.id].type];
+
+function mediaOnly(a){
+  const m = MEDIA[a.id];
+  if(!m || !m.srcs || !m.srcs[m.type]) return '';
+  const src = m.srcs[m.type];
+  if(m.type==='image') return '<img src="'+src+'" alt="'+a.name+'" class="media-zoom absolute inset-0 h-full w-full object-cover">';
+  if(m.type==='video') return '<video src="'+src+'" autoplay muted loop playsinline class="media-zoom absolute inset-0 h-full w-full object-cover"></video>';
+  return '<model-viewer src="'+src+'" auto-rotate rotation-per-second="30deg" camera-orbit="0deg 78deg 100%" interaction-prompt="none" disable-zoom disable-pan class="absolute inset-0 h-full w-full"></model-viewer>'+
+         '<span class="absolute right-2 top-2 z-20 rounded-full bg-slate-900/70 px-2 py-0.5 text-[9px] font-black text-white">3D</span>';
+}
+function spriteStyle(a){
+  const px = a.cell[0]*(100/(SHEET_COLS-1)), py = a.cell[1]*(100/(SHEET_ROWS-1));
+  const fb = 'Character_Set2.jpg';
+  return "background-image:url('Character Set2.jpg'),url('Character_Set2.jpg'),url('assets/aistudio/Character_Set2_2426a03b.jpg');background-size:600% 300%,600% 300%,600% 300%;background-position:"+px+"% "+py+"%,"+px+"% "+py+"%,"+px+"% "+py+"%;";
+}
+function spriteLayers(a){
+  if(a.id === 'albert3' && !hasMedia(a)) {
+    return '<div class="absolute inset-0 flex items-center justify-center p-2 bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950"><img src="albert-removebg-preview.png" alt="Albert III" class="h-full w-full object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.9)]"></div>';
+  }
+  return '<div class="sprite-bg" style="'+spriteStyle(a)+'"></div><div class="sprite-layer" style="'+spriteStyle(a)+'"></div>';
+}
+function mediaPortrait(a){ return mediaOnly(a) || spriteLayers(a); }
+
+function rarityBadge(r){
+  if(r==='UR')  return '<span class="badge-ur inline-flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-black tracking-widest text-white shadow-lg shadow-fuchsia-500/40 ring-1 ring-white/70">👑 UR • ULTRA RARE</span>';
+  if(r==='SSR') return '<span class="badge-ssr inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black tracking-widest text-amber-900 shadow-md shadow-amber-500/30 ring-1 ring-amber-200/80">★ SSR</span>';
+  return '<span class="inline-flex items-center gap-1 rounded-full bg-slate-100/90 px-2.5 py-1 text-[10px] font-black tracking-widest text-slate-600 shadow-sm ring-1 ring-slate-300/70 backdrop-blur">◆ SR</span>';
+}
+const PENCIL = '<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5z"/></svg>';
+function editBtn(a, extra){
+  return '<button data-edit="'+a.id+'" class="'+(extra||'')+'" title="เพิ่มรูป / วิดีโอ / 3D โมเดล">'+PENCIL+'</button>';
+}
+
+/* ================= ROSTER ================= */
+function cardHTML(a,i){
+  const s = STATUS[a.status], d = DEPTS[a.dept];
+  const frame = a.rarity==='SSR' ? 'card-ssr' : 'card-sr';
+  const custom = hasMedia(a);
+  return ''+
+  '<article class="card-wrap '+frame+' card-in group relative cursor-pointer" style="--c:'+a.color+';--glow:'+rgba(a.color,.45)+';animation-delay:'+(i*40)+'ms" data-id="'+a.id+'" role="button" tabindex="0" aria-label="'+a.name+'">'+
+    '<div class="flex h-full flex-col overflow-hidden rounded-[16px] bg-white">'+
+      '<div class="relative aspect-[2/3] overflow-hidden bg-slate-100">'+
+        mediaPortrait(a)+
+        '<div class="holo absolute inset-0 z-10"></div>'+
+        '<div class="pointer-events-none absolute inset-0 z-10 overflow-hidden"><span class="shine-bar"></span></div>'+
+        '<div class="absolute inset-x-0 bottom-0 z-10 h-2/5 bg-gradient-to-t from-slate-900/88 via-slate-900/40 to-transparent"></div>'+
+        '<div class="absolute left-2.5 top-2.5 z-20">'+rarityBadge(a.rarity)+'</div>'+
+        (custom?'<span class="absolute left-2.5 top-10 z-20 rounded-full bg-slate-900/60 px-1.5 py-0.5 text-[9px] font-black text-white">'+(MEDIA[a.id].type==='image'?'🖼️':MEDIA[a.id].type==='video'?'🎬':'')+'</span>':'')+
+        '<div class="glass absolute right-2.5 top-2.5 z-20 flex items-center gap-1.5 rounded-full px-2 py-0.5 shadow-sm">'+
+          '<span class="dot-pulse h-1.5 w-1.5 rounded-full" style="background:'+s.color+';--glow:'+rgba(s.color,.5)+'"></span>'+
+          '<span class="text-[9px] font-bold text-slate-700">'+s.label+'</span>'+
+        '</div>'+
+        editBtn(a,'absolute right-2.5 top-10 z-30 flex h-7 w-7 items-center justify-center rounded-full glass border border-white/60 text-slate-600 opacity-0 shadow-sm transition hover:text-indigo-600 group-hover:opacity-100')+
+        '<div class="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 scale-90 rounded-full glass px-3.5 py-1.5 text-[10px] font-black text-slate-800 opacity-0 shadow-lg transition duration-300 group-hover:scale-100 group-hover:opacity-100">View Profile →</div>'+
+        '<div class="absolute inset-x-0 bottom-0 z-20 p-3">'+
+          '<h3 class="text-[14px] font-black tracking-wide text-white drop-shadow">'+a.name+'</h3>'+
+          '<p class="mt-0.5 line-clamp-1 text-[10px] font-semibold text-slate-200/90">'+a.title+'</p>'+
+          '<div class="mt-1.5 flex items-center justify-between gap-2">'+
+            '<span class="flex items-center gap-1.5 font-mono text-[9px] text-slate-300"><span class="h-1.5 w-1.5 rounded-full" style="background:'+a.color+';box-shadow:0 0 8px '+rgba(a.color,.9)+'"></span>'+a.zone+'</span>'+
+            '<span class="rounded-full px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-white" style="background:'+rgba(a.color,.85)+'">'+d.short+'</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+  '</article>';
+}
+function bannerHTML(a,i){
+  const s = STATUS[a.status];
+  return ''+
+  '<div class="card-ur card-in relative mb-4 rounded-2xl" style="animation-delay:'+(i*40)+'ms" data-id="'+a.id+'" role="button" tabindex="0">'+
+    '<div class="relative flex flex-wrap items-center gap-4 rounded-[15px] bg-white p-4">'+
+      '<span class="sparkle absolute right-24 top-3 text-sm text-fuchsia-400" style="animation-delay:.6s">✦</span>'+
+      '<span class="sparkle absolute right-40 bottom-4 text-xs text-cyan-400" style="animation-delay:1.4s">✦</span>'+
+      '<div class="relative h-24 w-20 shrink-0 overflow-hidden rounded-xl bg-slate-900 shadow-inner flex items-center justify-center p-1">'+
+        '<img src="albert-removebg-preview.png" class="h-full w-full object-contain drop-shadow-[0_0_12px_rgba(168,85,247,0.9)]" alt="Albert III">'+
+        '<span class="absolute left-1 top-1 z-20">'+rarityBadge('UR')+'</span></div>'+
+      '<div class="min-w-[220px] flex-1">'+
+        '<h3 class="rainbow-text text-xl font-black tracking-tight">👑 ALBERT III</h3>'+
+        '<p class="text-xs font-black uppercase tracking-widest text-violet-500">'+a.title+'</p>'+
+        '<p class="mt-1 line-clamp-1 text-[11px] font-medium text-slate-500">'+a.role+'</p>'+
+        '<div class="mt-2 flex items-center gap-3">'+
+          '<span class="glass flex items-center gap-1.5 rounded-full px-2.5 py-1 shadow-sm"><span class="dot-pulse h-2 w-2 rounded-full" style="background:'+s.color+';--glow:'+rgba(s.color,.5)+'"></span><span class="text-[10px] font-bold text-slate-700">'+s.label+'</span></span>'+
+          '<span class="font-mono text-[10px] font-bold text-slate-400">'+a.zone+'</span>'+
+          '<span class="rounded-full px-2 py-0.5 text-[9px] font-black text-white" style="background:'+rgba(a.color,.85)+'">HUB</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="hidden w-40 space-y-1.5 lg:block">'+
+        ['SYNC','FOCUS','OUTPUT'].map(function(l,idx){return '<div class="flex items-center gap-2"><span class="w-12 text-[9px] font-black tracking-widest text-slate-400">'+l+'</span><div class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full" style="width:'+a.stats[idx]+'%;background:'+RAINBOW+'"></div></div></div>';}).join('')+
+      '</div>'+
+      '<div class="flex items-center gap-2">'+
+        editBtn(a,'flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-indigo-200 hover:text-indigo-600')+
+        '<span class="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-slate-900/25">View Profile →</span>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+function sectionHTML(key,list,start){
+  const d = DEPTS[key];
+  let banner='', gridList=list, idx=start;
+  if(key==='hub'){
+    const ur = list.find(a=>a.rarity==='UR');
+    if(ur){ banner = bannerHTML(ur, start); gridList = list.filter(a=>a.rarity!=='UR'); idx = start+1; }
+  }
+  return '<section class="mb-8"><header class="mb-3 flex flex-wrap items-center gap-3">'+
+    '<span class="flex h-9 w-9 items-center justify-center rounded-xl text-white" style="background:linear-gradient(135deg,'+d.color+','+rgba(d.color,.75)+');box-shadow:0 8px 20px -6px '+rgba(d.color,.55)+'">'+d.icon+'</span>'+
+    '<div><h2 class="text-base font-extrabold text-slate-900">'+d.th+' <span class="ml-1 text-xs font-semibold text-slate-400">'+d.en+'</span></h2>'+
+    '<p class="text-[11px] font-medium text-slate-500">'+d.desc+'</p></div>'+
+    '<span class="ml-auto rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-600 shadow-sm">'+list.length+' agents</span>'+
+    '</header>'+banner+
+    '<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">'+
+    gridList.map(function(a,i){ return cardHTML(a, idx+i); }).join('')+'</div></section>';
+}
+function matchChip(a){
+  if(state.chip==='all') return true;
+  if(state.chip==='ur'||state.chip==='ssr'||state.chip==='sr') return a.rarity===state.chip.toUpperCase();
+  return a.dept===state.chip;
+}
+function renderRoster(){
+  const q = state.q.trim().toLowerCase();
+  const parts=[]; let idx=0, shown=0;
+  ['hub','tamkoa','tumkao'].forEach(function(key){
+    let list = AGENTS.filter(a=>a.dept===key && matchChip(a));
+    if(q) list = list.filter(a=>(a.name+' '+a.title+' '+a.role+' '+a.zone).toLowerCase().includes(q));
+    if(list.length){ parts.push(sectionHTML(key,list,idx)); idx+=list.length; shown+=list.length; }
+  });
+  $('#roster-sections').innerHTML = parts.length ? parts.join('') :
+    '<div class="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-slate-300 bg-white/60 py-20 text-center"><span class="text-4xl">🔍</span><p class="text-sm font-bold text-slate-600">ไม่พบเอเจนต์ที่ตรงเงื่อนไข</p><button data-clear class="rounded-full bg-slate-900 px-5 py-2 text-xs font-bold text-white hover:bg-slate-700">Clear filters</button></div>';
+  $('#roster-count').textContent = 'Showing '+shown+' of '+AGENTS.length+' agents';
+}
+const CHIPS = [
+  {id:'all',label:'All',dot:'#0f172a'},{id:'ur',label:'UR',dot:'rainbow'},{id:'ssr',label:'SSR',dot:'#f59e0b'},{id:'sr',label:'SR',dot:'#94a3b8'},
+  {id:'hub',label:'Command Hub',dot:'#06b6d4'},{id:'tamkoa',label:'Tamkoa',dot:'#84cc16'},{id:'tumkao',label:'Tumkao',dot:'#6366f1'}
+];
+function countFor(id){
+  if(id==='all') return AGENTS.length;
+  if(['ur','ssr','sr'].includes(id)) return AGENTS.filter(a=>a.rarity===id.toUpperCase()).length;
+  return AGENTS.filter(a=>a.dept===id).length;
+}
+function renderChips(){
+  $('#chips').innerHTML = CHIPS.map(function(c){
+    const on = state.chip===c.id;
+    const dotBg = c.dot==='rainbow' ? RAINBOW : c.dot;
+    return '<button data-chip="'+c.id+'" class="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all duration-200 '+
+      (on?'scale-[1.04] bg-slate-900 text-white shadow-lg shadow-slate-900/25':'border border-slate-200 bg-white text-slate-600 shadow-sm hover:border-slate-300 hover:bg-slate-50')+'">'+
+      '<span class="h-2 w-2 rounded-full" style="background:'+dotBg+'"></span>'+c.label+
+      '<span class="text-[10px] font-extrabold '+(on?'text-slate-300':'text-slate-400')+'">'+countFor(c.id)+'</span></button>';
+  }).join('');
+}
+
+/* ================= PROFILE MODAL ================= */
+const modal = $('#modal'), panel = $('#modal-panel');
+function openModal(id){
+  const a = AGENTS.find(x=>x.id===id); if(!a) return;
+  const s = STATUS[a.status], d = DEPTS[a.dept], ur = a.rarity==='UR';
+  const num = 'HM-'+String(AGENTS.indexOf(a)+1).padStart(3,'0');
+  const swatch = ur ? RAINBOW : a.color;
+  const hexTxt = ur ? 'PRISMATIC / RAINBOW' : a.color.toUpperCase()+' • '+a.colorName;
+  const statLabels = ['SYNC','FOCUS','OUTPUT'];
+  const skills = AGENT_SKILLS[a.id] || [];
+  
+  panel.innerHTML = ''+
+  '<div class="relative grid md:grid-cols-[300px_1fr]">'+
+    '<button data-close class="absolute right-4 top-4 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-500 shadow-sm transition hover:bg-slate-100 hover:text-slate-800" aria-label="Close">✕</button>'+
+    '<div class="relative flex flex-col items-center gap-4 bg-gradient-to-br from-slate-50 to-slate-100 p-6">'+
+      '<div class="'+(ur?'ur-frame':'rounded-[20px] p-[2px]')+' w-full" '+(ur?'':'style="background:'+(a.rarity==='SSR'?'linear-gradient(135deg,#fcd34d,#f59e0b)':'#e2e8f0')+'"')+'>'+
+        '<div class="relative overflow-hidden rounded-[17px] shadow-xl" '+(ur?'style="box-shadow:0 20px 50px -12px rgba(168,85,247,.5)"':'')+'>'+
+          '<div class="relative aspect-[2/3] w-full overflow-hidden bg-slate-100">'+ mediaPortrait(a) +
+            '<div class="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-slate-900/85 to-transparent p-3"><p class="font-mono text-[10px] text-slate-300">'+a.zone+'</p></div>'+
+          '</div>'+
+          '<div class="absolute left-3 top-3 z-20">'+rarityBadge(a.rarity)+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<span class="rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white" style="background:'+d.color+'">'+d.short+' Division</span>'+
+    '</div>'+
+    '<div class="p-7">'+
+      '<h2 class="'+(ur?'rainbow-text':'')+' text-2xl font-black tracking-tight text-slate-900">'+(ur?'👑 ':'')+a.name+'</h2>'+
+      '<p class="mt-0.5 text-xs font-black uppercase tracking-widest" style="color:'+(ur?'#8b5cf6':a.color)+'">'+a.title+'</p>'+
+      '<p class="mt-3 text-sm font-medium leading-relaxed text-slate-600">'+a.role+'</p>'+
+      '<div class="mt-5 grid grid-cols-2 gap-3">'+
+        '<div class="rounded-xl border border-slate-100 bg-slate-50 p-3"><p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Rarity</p><div class="mt-1.5">'+rarityBadge(a.rarity)+'</div></div>'+
+        '<div class="rounded-xl border border-slate-100 bg-slate-50 p-3"><p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Status</p><p class="mt-1.5 flex items-center gap-2 text-sm font-bold text-slate-700"><span class="dot-pulse h-2.5 w-2.5 rounded-full" style="background:'+s.color+';--glow:'+rgba(s.color,.5)+'"></span>'+s.label+'</p></div>'+
+        '<div class="rounded-xl border border-slate-100 bg-slate-50 p-3"><p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Zone</p><p class="mt-1.5 font-mono text-xs font-bold text-slate-700">'+a.zone+'</p></div>'+
+        '<div class="rounded-xl border border-slate-100 bg-slate-50 p-3"><p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Signature Color</p>'+
+          '<p class="mt-1.5 flex items-center gap-2 text-xs font-bold text-slate-700"><span class="h-6 w-6 shrink-0 rounded-lg shadow ring-2 ring-white" style="background:'+swatch+'"></span><span class="font-mono text-[10px]">'+hexTxt+'</span></p></div>'+
+      '</div>'+
+      
+      '<!-- Agent Special Skills Section -->'+
+      '<div class="mt-5 rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50/50 to-sky-50/40 p-4 shadow-sm">'+
+        '<div class="flex items-center justify-between mb-3">'+
+          '<span class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-indigo-700">'+
+            '<svg class="h-4 w-4 text-indigo-500" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>'+
+            'Agent Skills &amp; Abilities (ทักษะพิเศษ)'+
+          '</span>'+
+          '<span class="text-[10px] font-bold text-indigo-600">'+skills.length+' Skills Available</span>'+
+        '</div>'+
+        '<div class="space-y-2.5">'+
+          skills.map(sk => `
+            <div class="rounded-xl bg-white border border-slate-200/80 p-3 shadow-xs transition hover:border-indigo-300 hover:shadow-sm">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 text-base">${sk.icon}</span>
+                  <div>
+                    <span class="text-xs font-black text-slate-800">${sk.name_th}</span>
+                    <span class="text-[10px] text-slate-400 font-mono ml-1.5">(${sk.name_en})</span>
+                  </div>
+                </div>
+                <span class="rounded px-2 py-0.5 text-[9px] font-black ${sk.type==='ULTIMATE'?'bg-rose-100 text-rose-700':sk.type==='ACTIVE'?'bg-sky-100 text-sky-700':'bg-violet-100 text-violet-700'}">${sk.type}</span>
+              </div>
+              <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">${sk.desc}</p>
+              <div class="mt-2 flex items-center gap-3 text-[10px] font-mono font-bold text-slate-400 border-t border-slate-100 pt-1.5">
+                <span>Cost: <strong class="text-slate-600">${sk.cost}</strong></span>
+                <span>CD: <strong class="text-slate-600">${sk.cd}</strong></span>
+              </div>
+            </div>
+          `).join('')+
+        '</div>'+
+      '</div>'+
+
+      '<p class="mt-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Appearance</p>'+
+      '<p class="mt-1.5 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm font-medium leading-relaxed text-slate-600">'+a.appearance+'</p>'+
+      '<p class="mt-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Duties &amp; Responsibilities</p>'+
+      '<ul class="mt-2 space-y-2">'+a.duties.map(function(t){return '<li class="flex items-start gap-2.5 text-sm font-medium text-slate-600"><svg class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="'+(ur?'#8b5cf6':a.color)+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>'+t+'</li>';}).join('')+'</ul>'+
+      '<p class="mt-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Core Stats</p>'+
+      '<div class="mt-2 space-y-2.5">'+a.stats.map(function(v,i){return ''+
+        '<div class="flex items-center gap-3"><span class="w-14 text-[10px] font-black tracking-widest text-slate-400">'+statLabels[i]+'</span>'+
+        '<div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div class="bar-fill h-full rounded-full" style="--w:'+v+'%;background:'+(ur?RAINBOW:'linear-gradient(90deg,'+a.color+','+rgba(a.color,.65)+')')+'"></div></div>'+
+        '<span class="w-8 text-right font-mono text-[11px] font-bold text-slate-600">'+v+'</span></div>';}).join('')+'</div>'+
+      '<div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">'+
+        '<span class="font-mono text-[10px] font-bold text-slate-400">Agent ID: '+num+'</span>'+
+        '<div class="flex gap-2.5">'+
+          '<button data-ping class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">📡 Ping Agent</button>'+
+          '<button data-assign class="rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-slate-900/25 transition hover:bg-slate-700 active:scale-95">'+(ur?'👑 Request Audience':'Assign Task')+'</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+  modal.classList.remove('hidden','modal-closing'); modal.classList.add('modal-open');
+  document.body.style.overflow='hidden';
+  panel.querySelector('[data-ping]').onclick = function(){ toast('📡 Pinged '+a.name+' — latency 42ms'); };
+  panel.querySelector('[data-assign]').onclick = function(){ closeModal(); toast(ur?'👑 Royal audience requested with ALBERT III':'✅ Task request sent to '+a.name); };
+}
+function closeModal(){
+  modal.classList.add('modal-closing'); modal.classList.remove('modal-open');
+  setTimeout(function(){ modal.classList.add('hidden'); modal.classList.remove('modal-closing'); document.body.style.overflow=''; },190);
+}
+modal.addEventListener('click', function(e){ if(e.target.closest('[data-close]')) closeModal(); });
+
+/* ================= MEDIA EDITOR ================= */
+const mmodal = $('#media-modal');
+const ME_TYPES = [ {id:'image',label:'🖼️ Image',accept:'image/*',note:'(png, jpg, webp)'},
+                   {id:'video',label:'🎬 Video',accept:'video/*',note:'(mp4, webm)'},
+                   {id:'model',label:'🧊 3D Model',accept:'.glb,.gltf',note:'(.glb, .gltf)'} ];
+let meAgent=null, meDraft=null;
+function openMediaEditor(id){
+  meAgent = AGENTS.find(a=>a.id===id); if(!meAgent) return;
+  const saved = MEDIA[id];
+  meDraft = { type: saved?saved.type:'image', srcs: Object.assign({image:null,video:null,model:null}, saved?saved.srcs:{}) };
+  $('#me-name').innerHTML = meAgent.name+' <span class="ml-1 align-middle">'+rarityBadge(meAgent.rarity)+'</span>';
+  mmodal.classList.remove('hidden','modal-closing'); mmodal.classList.add('modal-open');
+  document.body.style.overflow='hidden';
+  meRender();
+}
+function closeMedia(){
+  mmodal.classList.add('modal-closing'); mmodal.classList.remove('modal-open');
+  setTimeout(function(){ mmodal.classList.add('hidden'); mmodal.classList.remove('modal-closing'); document.body.style.overflow=''; },190);
+}
+function meRender(){
+  $('#me-types').innerHTML = ME_TYPES.map(function(t){
+    const on = meDraft.type===t.id;
+    return '<button data-mtype="'+t.id+'" class="rounded-full px-4 py-2 text-xs font-bold transition '+
+      (on?'bg-slate-900 text-white shadow-lg shadow-slate-900/25':'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50')+'">'+t.label+
+      (meDraft.srcs[t.id]?' ✓':'')+'</button>';
+  }).join('');
+  const t = ME_TYPES.find(x=>x.id===meDraft.type);
+  $('#me-accept-label').textContent = t.note;
+  $('#me-file').accept = t.accept;
+  const src = meDraft.srcs[meDraft.type];
+  let inner = '';
+  if(src){
+    if(meDraft.type==='image') inner = '<img src="'+src+'" class="absolute inset-0 h-full w-full object-cover">';
+    else if(meDraft.type==='video') inner = '<video src="'+src+'" autoplay muted loop playsinline class="absolute inset-0 h-full w-full object-cover"></video>';
+    else inner = '<model-viewer src="'+src+'" auto-rotate camera-orbit="0deg 78deg 105%" interaction-prompt="none" class="absolute inset-0 h-full w-full"></model-viewer>';
+  } else {
+    inner = '<div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-400"><span class="text-3xl">'+(meDraft.type==='image'?'🖼️':meDraft.type==='video'?'🎬':'')+'</span><span class="text-xs font-bold">ยังไม่มีมีเดียประเภทนี้ — จะแสดง sprite เดิม</span></div>';
+  }
+  $('#me-preview').innerHTML = inner;
+}
+$('#me-types').addEventListener('click', function(e){
+  const b=e.target.closest('[data-mtype]'); if(!b) return;
+  meDraft.type=b.dataset.mtype; meRender();
+});
+$('#me-file').addEventListener('change', function(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=function(){ meDraft.srcs[meDraft.type]=r.result; meRender(); toast('📁 โหลดไฟล์แล้ว — กดบันทึกเพื่อใช้งาน'); };
+  r.readAsDataURL(f);
+  e.target.value='';
+});
+$('#me-use-url').onclick=function(){
+  const v=$('#me-url').value.trim(); if(!v){ toast('⚠️ กรุณาวาง URL ก่อน'); return; }
+  meDraft.srcs[meDraft.type]=v; $('#me-url').value=''; meRender(); toast('🔗 ตั้ง URL แล้ว — กดบันทึกเพื่อใช้งาน');
+};
+$('#me-save').onclick=function(){
+  MEDIA[meAgent.id]={ type:meDraft.type, srcs:meDraft.srcs };
+  if(saveMedia()){ renderRoster(); closeMedia(); toast('💾 บันทึกมีเดียของ '+meAgent.name+' เรียบร้อย'); }
+};
+$('#me-remove').onclick=function(){
+  delete MEDIA[meAgent.id]; saveMedia(); renderRoster(); closeMedia(); toast('🗑 ลบมีเดียแล้ว — กลับไปใช้ sprite เดิม');
+};
+mmodal.addEventListener('click', function(e){ if(e.target.closest('[data-mclose]')) closeMedia(); });
+
+/* ================= GLOBAL CLICK / KEYS ================= */
+document.addEventListener('click', function(e){
+  const ed = e.target.closest('[data-edit]');
+  if(ed){ e.stopPropagation(); openMediaEditor(ed.dataset.edit); return; }
+  const card = e.target.closest('[data-id]');
+  if(card && (card.classList.contains('card-wrap') || card.classList.contains('card-ur'))) openModal(card.dataset.id);
+});
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape'){
+    if(!mmodal.classList.contains('hidden')) closeMedia();
+    else if(!modal.classList.contains('hidden')) closeModal();
+  }
+  if(e.key==='/' && state.view==='agents' && document.activeElement!==$('#agent-search')){ e.preventDefault(); $('#agent-search').focus(); }
+  if(e.key==='Enter' && document.activeElement && document.activeElement.dataset && document.activeElement.dataset.id) openModal(document.activeElement.dataset.id);
+});
+
+/* ================= VIEW SWITCH ================= */
+function switchView(v){
+  state.view=v;
+  $('#view-home').classList.toggle('hidden', v!=='home');
+  $('#view-agents').classList.toggle('hidden', v!=='agents');
+  $('#view-neural').classList.toggle('hidden', v!=='neural');
+  
+  const el = $(v==='home'?'#view-home':v==='agents'?'#view-agents':'#view-neural');
+  el.classList.remove('view-anim'); void el.offsetWidth; el.classList.add('view-anim');
+  
+  document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('nav-active', b.dataset.view===v));
+  $('#top-title').textContent = v==='home' ? 'หน้าบัญชาการกลาง' : v==='agents' ? 'คลังเอเจนต์ & ลำดับชั้น' : 'แผนผังสมองจำลอง 3D';
+  $('#main-scroll').scrollTop = 0;
+  
+  if (v === 'neural') {
+    window.dispatchEvent(new Event('resize'));
+  }
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=function(){ switchView(b.dataset.view); });
+document.querySelectorAll('[data-toast]').forEach(b=>b.onclick=function(){ toast(b.dataset.toast); });
+$('#guide-cameo').onclick=function(){ openModal('guide'); };
+$('#albert-banner').onclick=function(){ openModal('albert3'); };
+$('#btn-refresh').onclick=function(){ ago=0; toast('♻️ อัปเดตสถานะระบบแล้ว'); };
+
+/* ================= TOAST ================= */
+let toastTimer;
+function toast(msg){
+  const t=$('#toast'); $('#toast-msg').textContent=msg;
+  t.classList.remove('hidden'); t.classList.add('flex');
+  requestAnimationFrame(()=>t.classList.add('show'));
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.classList.add('hidden'); t.classList.remove('flex'); },300); },2600);
+}
+
+/* ================= DASHBOARD BUILD ================= */
+$('#avatar-stack').innerHTML = AGENTS.slice(0,8).map(function(a){
+  return '<span class="flex h-7 w-7 items-center justify-center rounded-full text-[9px] font-black text-white ring-2 ring-white" style="background:'+(a.rarity==='UR'?RAINBOW:a.color)+'" title="'+a.name+'">'+a.name.slice(0,2)+'</span>';
+}).join('') + '<span class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-[9px] font-black text-slate-500 ring-2 ring-white">+10</span>';
+
+$('#dept-bars').innerHTML = ['hub','tamkoa','tumkao'].map(function(k){
+  const list=AGENTS.filter(a=>a.dept===k);
+  const act=list.filter(a=>a.status!=='idle').length;
+  const d=DEPTS[k], pct=Math.round(act/list.length*100);
+  const names={hub:'Hermes Hub',tamkoa:'Tamkoa',tumkao:'Tumkao'};
+  return '<div class="flex items-center gap-2"><span class="w-16 text-[10px] font-bold text-slate-500">'+names[k]+'</span>'+
+    '<div class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full" style="width:'+pct+'%;background:'+d.color+'"></div></div>'+
+    '<span class="w-7 text-right font-mono text-[9px] font-bold text-slate-400">'+act+'/'+list.length+'</span></div>';
+}).join('');
+
+$('#task-mini').innerHTML = TASKS_MINI.map(function(t){ return ''+
+  '<div class="flex items-center gap-2">'+
+    '<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] '+t.bg+'">'+t.ic+'</span>'+
+    '<span class="min-w-0 flex-1"><span class="block truncate text-[11px] font-bold text-slate-700">'+t.t+'</span>'+
+    '<span class="block font-mono text-[9px] text-slate-400">'+t.m+'</span></span>'+
+    '<span class="shrink-0 rounded px-1.5 py-0.5 font-mono text-[8px] font-black '+t.cls+'">'+t.tag+'</span>'+
+  '</div>'; }).join('');
+
+$('#ticket-list').innerHTML = TICKETS.map(function(t){ return ''+
+  '<div class="flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 transition hover:border-slate-200 hover:shadow-sm">'+
+    '<span class="h-2.5 w-2.5 shrink-0 rounded-full" style="background:'+t.c+'"></span>'+
+    '<div class="min-w-0 flex-1"><p class="truncate text-xs font-bold text-slate-700">'+t.title+'</p>'+
+    '<p class="font-mono text-[10px] text-slate-400">'+t.id+' • '+t.who+' • '+t.t+'</p></div>'+
+    '<span class="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black ring-1 '+t.cls+'">'+t.st+'</span>'+
+  '</div>'; }).join('');
+
+$('#activity-list').innerHTML = ACTIVITY.map(function(a,i){ return ''+
+  '<div class="relative flex gap-3">'+
+    (i<ACTIVITY.length-1?'<span class="absolute left-[5px] top-4 h-full w-px bg-slate-200"></span>':'')+
+    '<span class="relative mt-1 h-[11px] w-[11px] shrink-0 rounded-full ring-2 ring-white" style="background:'+a.c+'"></span>'+
+    '<div><p class="text-xs font-semibold text-slate-600">'+a.txt+'</p><p class="font-mono text-[10px] text-slate-400">'+a.t+' • '+a.z+'</p></div>'+
+  '</div>'; }).join('');
+
+/* Clocks + quota countdown */
+function tick(){
+  const t = new Date().toLocaleTimeString('en-GB');
+  $('#clock-top').textContent=t; $('#clock-map').textContent=t; $('#clock-tz').textContent=t;
+}
+tick(); setInterval(tick,1000);
+let ago=3; setInterval(function(){ ago=ago%9+1; $('#live-ago').textContent=ago+'s ago'; },1000);
+let resetSec = 6*3600 + 12*60 + 44;
+setInterval(function(){
+  resetSec = resetSec>0 ? resetSec-1 : 24*3600;
+  const h=String(Math.floor(resetSec/3600)).padStart(2,'0'),
+        m=String(Math.floor(resetSec%3600/60)).padStart(2,'0'),
+        s=String(resetSec%60).padStart(2,'0');
+  $('#quota-count').textContent = h+':'+m+':'+s;
+},1000);
+
+/* ================= TOKEN BURN (PACMAN) GSAP ANIMATION ================= */
+function initPacmanAnim() {
+  const dotsContainer = document.getElementById('token-dots');
+  if (dotsContainer) {
+    for (let i = 0; i < 20; i++) {
+      let dot = document.createElement('div');
+      dot.className = 'w-1 h-1 bg-amber-400 rounded-full';
+      dotsContainer.appendChild(dot);
+    }
+  }
+  gsap.fromTo('#pacman-anim', { left: '5%' }, { left: '64%', duration: 3, ease: 'linear', repeat: -1 });
+  gsap.fromTo('#token-bar', { width: '5%' }, { width: '64%', duration: 3, ease: 'linear', repeat: -1 });
+}
+
+/* ================= 3D CONTROLS (NO ZOOM ALLOWED) ================= */
+function handle3DControlsNoZoom(container, scene) {
+    let isDragging = false;
+    let prevMouseX = 0, prevMouseY = 0;
+    
+    container.addEventListener('mousedown', (e) => {
+        if (e.target.closest('button') || e.target.closest('[data-id]') || e.target.closest('[data-neural]')) return;
+        isDragging = true;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+    });
+    document.addEventListener('mouseup', () => isDragging = false);
+    container.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const dx = e.clientX - prevMouseX;
+            const dy = e.clientY - prevMouseY;
+            scene.rotation.y += dx * 0.005;
+            scene.rotation.x = Math.max(-0.25, Math.min(Math.PI/2.4, scene.rotation.x + dy * 0.004));
+            prevMouseX = e.clientX;
+            prevMouseY = e.clientY;
+        }
+    });
+
+    // Touch support (1 finger rotate, strictly NO multi-touch pinch zoom)
+    container.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            isDragging = true;
+            prevMouseX = e.touches[0].clientX;
+            prevMouseY = e.touches[0].clientY;
+        }
+    }, { passive: true });
+    document.addEventListener('touchend', () => isDragging = false);
+    container.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) {
+            e.preventDefault(); // prevent pinch zoom
+            return;
+        }
+        if (isDragging && e.touches.length === 1) {
+            const dx = e.touches[0].clientX - prevMouseX;
+            const dy = e.touches[0].clientY - prevMouseY;
+            scene.rotation.y += dx * 0.005;
+            scene.rotation.x = Math.max(-0.25, Math.min(Math.PI/2.4, scene.rotation.x + dy * 0.004));
+            prevMouseX = e.touches[0].clientX;
+            prevMouseY = e.touches[0].clientY;
+        }
+    }, { passive: false });
+
+    // Strictly intercept and disable wheel zoom
+    container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }, { passive: false });
+}
+
+/* ================= 1. VIRTUAL OFFICE 3D (Restored Design - Clean UI & No Zoom) ================= */
+function initVirtualOffice3D() {
+    const container = document.getElementById('vo-container');
+    const canvasEl = document.getElementById('vo-canvas');
+    const zonesEl = document.getElementById('vo-zones');
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+    // Locked overview framing centered in screen
+    camera.position.set(0, 32, 78);
+    camera.lookAt(0, 6, 0);
+    scene.rotation.x = Math.PI / 6.5;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    canvasEl.appendChild(renderer.domElement);
+
+    const nodes3D = [];
+    const dashedLines = [];
+    
+    const hubData = ZONES.find(z => z.big);
+    const hubPos = new THREE.Vector3(0, 0, 0);
+
+    const hubMesh = new THREE.Mesh(new THREE.SphereGeometry(1), new THREE.MeshBasicMaterial({ visible: false }));
+    hubMesh.position.copy(hubPos);
+    scene.add(hubMesh);
+    nodes3D.push({ data: hubData, mesh: hubMesh, index: 0 });
+
+    ZONES.filter(z => !z.big && !z.ur).forEach((z, i) => {
+        const angle = (i / 7) * Math.PI * 2;
+        const radius = 35 + Math.random() * 5;
+        const posX = Math.cos(angle) * radius;
+        const posZ = Math.sin(angle) * radius;
+        const posY = (Math.random() * 5) - 2.5;
+
+        const nodeMesh = new THREE.Mesh(new THREE.SphereGeometry(1), new THREE.MeshBasicMaterial({ visible: false }));
+        nodeMesh.position.set(posX, posY, posZ);
+        scene.add(nodeMesh);
+        nodes3D.push({ data: z, mesh: nodeMesh, index: i+1 });
+
+        // Original Dashed Line
+        const points = [hubPos, nodeMesh.position];
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+        const lineMat = new THREE.LineDashedMaterial({ 
+            color: 0x94a3b8, // Slate 400
+            linewidth: 1, scale: 1, dashSize: 2, gapSize: 2 
+        });
+        const line = new THREE.Line(lineGeo, lineMat);
+        line.computeLineDistances();
+        scene.add(line);
+        dashedLines.push(line);
+    });
+
+    // Handle Throne (UR) - Keep above Hub
+    const throneData = ZONES.find(z => z.ur);
+    const throneMesh = new THREE.Mesh(new THREE.SphereGeometry(1), new THREE.MeshBasicMaterial({ visible: false }));
+    throneMesh.position.set(0, 25, -15);
+    scene.add(throneMesh);
+    nodes3D.push({ data: throneData, mesh: throneMesh, index: 8 });
+    
+    const lineGeoUR = new THREE.BufferGeometry().setFromPoints([hubPos, throneMesh.position]);
+    const lineUR = new THREE.Line(lineGeoUR, new THREE.LineDashedMaterial({ color: 0x94a3b8, dashSize: 2, gapSize: 2 }));
+    lineUR.computeLineDistances();
+    scene.add(lineUR);
+    dashedLines.push(lineUR);
+
+        // Create DOM nodes once
+    nodes3D.forEach(node => {
+        const el = document.createElement("div");
+        el.className = "absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer";
+        el.dataset.id = node.data.agentId;
+        let inner = "";
+        if(node.data.ur) {
+            inner = '<div class="relative rounded-2xl bg-white px-4 py-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-2 border-transparent bg-clip-padding" style="box-shadow: 0 0 20px rgba(168,85,247,0.3)">' +
+                    '<div class="absolute -inset-[2px] z-[-1] rounded-2xl bg-gradient-to-r from-fuchsia-600 via-amber-500 to-emerald-500"></div>' +
+                    '<div class="flex flex-col items-center"><div class="flex items-center gap-2"><span class="dot-pulse h-2 w-2 rounded-full bg-emerald-500"></span><span class="text-xs font-black rainbow-text">👑 '+node.data.n+'</span></div>' +
+                    '<span class="text-[10px] font-semibold text-slate-500">'+node.data.sub+'</span></div></div>' +
+                    '<img src="albert-removebg-preview.png" class="absolute -top-[52px] left-1/2 -translate-x-1/2 h-14 w-14 object-contain drop-shadow-[0_0_15px_rgba(168,85,247,0.8)] pointer-events-none">';
+        } else if(node.data.big) {
+            inner = '<div class="rounded-xl bg-white px-4 py-2 shadow-lg border-2 border-cyan-300 transition hover:shadow-xl"><div class="flex flex-col items-center"><div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full" style="background:'+node.data.c+'"></span><span class="text-xs font-black text-slate-800">'+node.data.n+'</span></div><span class="text-[10px] font-semibold text-slate-500">'+node.data.sub+'</span></div></div>';
+        } else {
+            inner = '<div class="rounded-xl bg-white/95 backdrop-blur px-4 py-2 shadow-sm border border-slate-200/80 transition hover:shadow-md"><div class="flex flex-col items-center"><div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full" style="background:'+node.data.c+'"></span><span class="text-xs font-black text-slate-800">'+node.data.n+'</span></div><span class="text-[10px] font-semibold text-slate-500">'+node.data.sub+'</span></div></div>';
+        }
+        el.innerHTML = '<div class="floaty" style="animation-delay:'+(node.index*.55)+'s">'+inner+'</div>';
+        zonesEl.appendChild(el);
+        node.domEl = el;
+    });
+
+    handle3DControlsNoZoom(container, scene);
+
+    function animate() {
+        requestAnimationFrame(animate);
+        dashedLines.forEach(line => { line.material.dashOffset -= 0.04; });
+        renderer.render(scene, camera);
+        
+        const tempV = new THREE.Vector3();
+        nodes3D.forEach(node => {
+            node.mesh.updateMatrixWorld();
+            tempV.setFromMatrixPosition(node.mesh.matrixWorld);
+            tempV.project(camera);
+            if (tempV.z < 1) {
+                const x = (tempV.x * 0.5 + 0.5) * container.clientWidth;
+                const y = (tempV.y * -0.5 + 0.5) * container.clientHeight;
+                node.domEl.style.display = "block";
+                node.domEl.style.left = x + "px";
+                node.domEl.style.top = y + "px";
+            } else {
+                node.domEl.style.display = "none";
+            }
+        });
+    }
+    animate();
+
+    document.getElementById('vo-fullscreen-btn').addEventListener('click', () => {
+        container.classList.toggle('fullscreen-3d');
+        window.dispatchEvent(new Event('resize'));
+    });
+    window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+}
+
+/* ================= 2. NEURAL 3D MAP (3D Brain Simulation + Electric Current + Hierarchy) ================= */
+let triggerElectricSurge = null; // Exposed for interactive skill activations
+
+function initNeuralMap3D() {
+    const container = document.getElementById('neural-container');
+    const canvasEl = document.getElementById('neural-canvas');
+    const zonesEl = document.getElementById('neural-zones');
+    const hologramEl = document.getElementById('albert-hologram');
+    const panelEl = document.getElementById('neural-panel');
+
+    const scene = new THREE.Scene();
+    // Balanced overview camera framing
+    const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.set(0, 0, 165);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    canvasEl.appendChild(renderer.domElement);
+
+    const nodes3D = [];
+    const electricCurrents = [];
+    const surgeBolts = [];
+    
+    // Core center position (Brain Center & Albert Hologram)
+    const centerPos = new THREE.Vector3(0, 2, 0); 
+
+    /* ---------- 3D BRAIN SIMULATION (Clear Convolutions, Sulci & Gyri, Synaptic Fibers) ---------- */
+    const brainGroup = new THREE.Group();
+    scene.add(brainGroup);
+
+    // Anatomical Brain Hemispheres (Left & Right) with Mathematical Convolutions
+    function buildCerebralHemisphere(isLeft) {
+        const segTheta = 44, segPhi = 34;
+        const geom = new THREE.SphereGeometry(17, segTheta, segPhi);
+        const pos = geom.attributes.position;
+        const xOffset = isLeft ? -7.0 : 7.0;
+
+        for (let i = 0; i < pos.count; i++) {
+            let vx = pos.getX(i);
+            let vy = pos.getY(i);
+            let vz = pos.getZ(i);
+
+            let v = new THREE.Vector3(vx, vy, vz);
+            let len = v.length();
+            let theta = Math.atan2(v.z, v.x);
+            let phi = Math.acos(Math.max(-1, Math.min(1, v.y / len)));
+
+            // Cerebral convolutions: sulci (grooves) and gyri (folds)
+            let fold1 = Math.sin(theta * 7 + Math.cos(phi * 8)) * 1.6;
+            let fold2 = Math.cos(phi * 13 + theta * 5) * 1.2;
+            let fold3 = Math.sin(theta * 17 + phi * 14) * 0.55;
+            let sulcusIndent = fold1 + fold2 + fold3;
+
+            // Anatomical lobe sculpting
+            let zElongation = 1.25; // Human brain longer front-to-back
+            let yCurve = 0.95 + 0.18 * Math.sin(phi); // Parietal crest
+            let r = len + sulcusIndent;
+            v.normalize().multiplyScalar(r);
+
+            pos.setXYZ(i, v.x * 0.88 + xOffset, v.y * yCurve * 0.78, v.z * zElongation);
+        }
+        geom.computeVertexNormals();
+
+        // Holographic cortex wireframe
+        const wireMat = new THREE.MeshBasicMaterial({
+            color: isLeft ? 0x818cf8 : 0x06b6d4,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.16
+        });
+        const mesh = new THREE.Mesh(geom, wireMat);
+        return { mesh, geom };
+    }
+
+    const leftBrain = buildCerebralHemisphere(true);
+    const rightBrain = buildCerebralHemisphere(false);
+    brainGroup.add(leftBrain.mesh);
+    brainGroup.add(rightBrain.mesh);
+
+    // Synaptic Neural Points Cloud (Brain neural dots glowing)
+    const synapseCount = 950;
+    const synapseGeo = new THREE.BufferGeometry();
+    const synapsePositions = new Float32Array(synapseCount * 3);
+    const synapseColors = new Float32Array(synapseCount * 3);
+
+    for (let i = 0; i < synapseCount; i++) {
+        const isLeft = Math.random() > 0.5;
+        const geom = isLeft ? leftBrain.geom : rightBrain.geom;
+        const vertIndex = Math.floor(Math.random() * geom.attributes.position.count);
+        
+        const px = geom.attributes.position.getX(vertIndex) + (Math.random() * 1.4 - 0.7);
+        const py = geom.attributes.position.getY(vertIndex) + (Math.random() * 1.4 - 0.7);
+        const pz = geom.attributes.position.getZ(vertIndex) + (Math.random() * 1.4 - 0.7);
+
+        synapsePositions[i*3] = px;
+        synapsePositions[i*3+1] = py;
+        synapsePositions[i*3+2] = pz;
+
+        // Cyan-violet gradient sparks
+        if (Math.random() > 0.45) {
+            synapseColors[i*3] = 0.02; synapseColors[i*3+1] = 0.71; synapseColors[i*3+2] = 0.83; // cyan
+        } else {
+            synapseColors[i*3] = 0.51; synapseColors[i*3+1] = 0.36; synapseColors[i*3+2] = 0.96; // violet
+        }
+    }
+    synapseGeo.setAttribute('position', new THREE.BufferAttribute(synapsePositions, 3));
+    synapseGeo.setAttribute('color', new THREE.BufferAttribute(synapseColors, 3));
+
+    const synapseMat = new THREE.PointsMaterial({
+        size: 1.4,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.85,
+        blending: THREE.AdditiveBlending
+    });
+    const synapsePoints = new THREE.Points(synapseGeo, synapseMat);
+    brainGroup.add(synapsePoints);
+
+    // Internal Brain Synaptic Sparks (lines that flash randomly)
+    const brainFlashLines = [];
+    for (let i = 0; i < 28; i++) {
+        const p1 = new THREE.Vector3((Math.random()-0.5)*26, (Math.random()-0.5)*18, (Math.random()-0.5)*30);
+        const p2 = p1.clone().add(new THREE.Vector3((Math.random()-0.5)*14, (Math.random()-0.5)*12, (Math.random()-0.5)*14));
+        const lineGeo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+        const lineMat = new THREE.LineBasicMaterial({
+            color: Math.random() > 0.5 ? 0x38bdf8 : 0xa855f7,
+            transparent: true,
+            opacity: 0.25
+        });
+        const lMesh = new THREE.Line(lineGeo, lineMat);
+        brainGroup.add(lMesh);
+        brainFlashLines.push({ mesh: lMesh, mat: lineMat, baseOpacity: 0.2 + Math.random()*0.3 });
+    }
+
+    /* ---------- DEPARTMENT CLUSTERS & HIERARCHY LAYOUT ---------- */
+    // Cluster Anchors (Distinct Separation)
+    const deptClusterConfig = {
+        hub: {
+            center: new THREE.Vector3(0, 42, -5),
+            leaderId: 'hermes',
+            colorHex: 0x06b6d4,
+            name: 'HUB COMMAND CLUSTER',
+            radius: 20
+        },
+        tamkoa: {
+            center: new THREE.Vector3(-66, -18, 5),
+            leaderId: 'weave',
+            colorHex: 0x84cc16,
+            name: 'TAMKOA INTELLIGENCE CLUSTER',
+            radius: 22
+        },
+        tumkao: {
+            center: new THREE.Vector3(66, -18, 5),
+            leaderId: 'creative',
+            colorHex: 0x6366f1,
+            name: 'TUMKAO PRODUCTION CLUSTER',
+            radius: 26
+        }
+    };
+
+    // Sub-agent distribution around their department leader
+    const subAgentsByDept = { hub: [], tamkoa: [], tumkao: [] };
+    AGENTS.forEach(a => {
+        if (!a.ur) subAgentsByDept[a.dept].push(a);
+    });
+
+    ['hub', 'tamkoa', 'tumkao'].forEach(deptKey => {
+        const cfg = deptClusterConfig[deptKey];
+        const agents = subAgentsByDept[deptKey];
+        const leader = agents.find(a => a.id === cfg.leaderId);
+        const subAgents = agents.filter(a => a.id !== cfg.leaderId);
+
+        // Position Leader at cluster center
+        const leaderMesh = new THREE.Mesh(new THREE.SphereGeometry(1.2), new THREE.MeshBasicMaterial({ visible: false }));
+        leaderMesh.position.copy(cfg.center);
+        scene.add(leaderMesh);
+        nodes3D.push({ data: leader, mesh: leaderMesh, isLeader: true, deptKey: deptKey });
+
+        // Major Electric Trunk Line from Brain to Leader
+        createElectricTrunkLine(centerPos, cfg.center, cfg.colorHex, leader);
+
+        // Position Sub-Agents in an orbit around their Leader
+        subAgents.forEach((sub, sIdx) => {
+            const angle = (sIdx / subAgents.length) * Math.PI * 2 + (deptKey === 'hub' ? Math.PI : 0);
+            const dist = cfg.radius + (sIdx % 2 === 0 ? -3 : 4);
+            const subPos = new THREE.Vector3(
+                cfg.center.x + Math.cos(angle) * dist,
+                cfg.center.y + Math.sin(angle) * (dist * 0.75),
+                cfg.center.z + (Math.sin(sIdx) * 8 - 4)
+            );
+
+            const subMesh = new THREE.Mesh(new THREE.SphereGeometry(0.8), new THREE.MeshBasicMaterial({ visible: false }));
+            subMesh.position.copy(subPos);
+            scene.add(subMesh);
+            nodes3D.push({ data: sub, mesh: subMesh, isLeader: sub.rarity === 'SSR', deptKey: deptKey });
+
+            // Electric Branch Line from Leader to Sub-Agent
+            createElectricBranchLine(cfg.center, subPos, parseInt(sub.color.replace('#','0x')), sub);
+        });
+    });
+
+    /* ---------- ELECTRIC CURRENT EFFECT GENERATOR ---------- */
+    // Creates a jagged, pulsing electric current line
+    function createElectricTrunkLine(start, end, colorHex, targetAgent) {
+        // Curve with arch
+        const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+        mid.y += 6; // arch
+        const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+
+        // Multi-point dynamic electric line
+        const segCount = 36;
+        const pts = curve.getPoints(segCount);
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+        
+        // Base electric glowing line
+        const lineMat = new THREE.LineBasicMaterial({
+            color: colorHex,
+            transparent: true,
+            opacity: 0.55,
+            linewidth: 2
+        });
+        const trunkLine = new THREE.Line(lineGeo, lineMat);
+        scene.add(trunkLine);
+
+        // Jagged crackling electricity overlay
+        const jitterGeo = new THREE.BufferGeometry().setFromPoints(pts);
+        const jitterMat = new THREE.LineBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.85
+        });
+        const jitterLine = new THREE.Line(jitterGeo, jitterMat);
+        scene.add(jitterLine);
+
+        // Surging high-speed electric current pulses (command packets)
+        const pulseCount = 3;
+        for (let p = 0; p < pulseCount; p++) {
+            const pMesh = new THREE.Mesh(
+                new THREE.SphereGeometry(1.2, 8, 8),
+                new THREE.MeshBasicMaterial({ color: 0xffffff, blending: THREE.AdditiveBlending })
+            );
+            scene.add(pMesh);
+            electricCurrents.push({
+                mesh: pMesh,
+                curve: curve,
+                t: p / pulseCount,
+                speed: 0.007 + Math.random() * 0.004,
+                colorHex: colorHex
+            });
+        }
+
+        // Store trunk reference for animation
+        trunkLine.userData = {
+            curve: curve,
+            pts: pts,
+            jitterGeo: jitterGeo,
+            jitterLine: jitterLine,
+            targetAgentId: targetAgent.id
+        };
+    }
+
+    function createElectricBranchLine(start, end, colorHex, targetAgent) {
+        const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+        mid.z += (Math.random() - 0.5) * 4;
+        const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+
+        const pts = curve.getPoints(18);
+        const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+        const lineMat = new THREE.LineBasicMaterial({
+            color: colorHex,
+            transparent: true,
+            opacity: 0.35
+        });
+        const branchLine = new THREE.Line(lineGeo, lineMat);
+        scene.add(branchLine);
+
+        // Electric packet traveling to sub-agent
+        const pMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(0.7, 6, 6),
+            new THREE.MeshBasicMaterial({ color: colorHex, blending: THREE.AdditiveBlending })
+        );
+        scene.add(pMesh);
+        electricCurrents.push({
+            mesh: pMesh,
+            curve: curve,
+            t: Math.random(),
+            speed: 0.005 + Math.random() * 0.003,
+            colorHex: colorHex
+        });
+
+        branchLine.userData = {
+            curve: curve,
+            pts: pts,
+            targetAgentId: targetAgent.id
+        };
+    }
+
+    // Interactive Skill Trigger Function: Sends massive high-voltage surge
+    triggerElectricSurge = function(agentId) {
+        const targetNode = nodes3D.find(n => n.data.id === agentId);
+        if (!targetNode) return;
+
+        const start = centerPos.clone();
+        const end = targetNode.mesh.position.clone();
+        const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+        mid.y += (Math.random() - 0.5) * 10;
+        mid.z += (Math.random() - 0.5) * 10;
+        const surgeCurve = new THREE.QuadraticBezierCurve3(start, mid, end);
+
+        // Create glowing surge bolt
+        const boltMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(2.2, 12, 12),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, blending: THREE.AdditiveBlending })
+        );
+        scene.add(boltMesh);
+        surgeBolts.push({
+            mesh: boltMesh,
+            curve: surgeCurve,
+            t: 0,
+            speed: 0.04,
+            targetNode: targetNode
+        });
+
+        // Flash target node
+        const domEl = zonesEl.querySelector(`[data-neural="${agentId}"]`);
+        if (domEl) {
+            domEl.classList.add('scale-150');
+            setTimeout(() => domEl.classList.remove('scale-150'), 400);
+        }
+    };
+
+        // Create 2D HTML Agent Nodes with True Hierarchy & Glowing Auras once
+    nodes3D.forEach(node => {
+        const a = node.data;
+        const isLeader = node.isLeader;
+        const auraClass = node.deptKey === "hub" ? "node-aura-hub" : node.deptKey === "tamkoa" ? "node-aura-tamkoa" : "node-aura-tumkao";
+        const el = document.createElement("div");
+        el.className = "absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer pointer-events-auto group " + (isLeader ? "z-30" : "z-20");
+        el.dataset.neural = a.id;
+        
+        if (isLeader) {
+            el.innerHTML = `
+                <div class="relative flex flex-col items-center">
+                    <div class="relative flex h-11 w-11 items-center justify-center rounded-full ${auraClass} border-2 border-white shadow-xl transition-transform hover:scale-125" style="background:${a.color};">
+                        <span class="text-xs font-black text-white drop-shadow">${a.name.slice(0,2)}</span>
+                        <span class="absolute -top-1.5 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[8px] font-black text-slate-900 shadow ring-1 ring-white">★</span>
+                    </div>
+                    <div class="mt-1 flex flex-col items-center rounded-lg bg-slate-900/90 backdrop-blur border border-slate-700/80 px-2 py-0.5 shadow-md transition-all group-hover:border-indigo-400 group-hover:bg-slate-900">
+                        <span class="text-[8px] font-black uppercase tracking-wider text-amber-400">LEADER</span>
+                        <span class="text-[10px] font-black text-white leading-tight">${a.name}</span>
+                    </div>
+                </div>`;
+        } else {
+            el.innerHTML = `
+                <div class="relative flex flex-col items-center">
+                    <div class="relative flex h-6 w-6 items-center justify-center rounded-full border border-white/70 transition-transform hover:scale-135 shadow-[0_0_12px_${a.color}]" style="background:${a.color};">
+                        <span class="text-[8px] font-black text-white">${a.name.slice(0,1)}</span>
+                    </div>
+                    <span class="mt-0.5 text-[8px] font-bold text-slate-300 opacity-80 group-hover:opacity-100 group-hover:text-white transition-opacity bg-slate-900/70 px-1 rounded">${a.name.split(" / ")[0]}</span>
+                </div>`;
+        }
+        zonesEl.appendChild(el);
+        node.domEl = el;
+    });
+
+    handle3DControlsNoZoom(container, scene);
+
+    let frameCount = 0;
+    function animate() {
+        requestAnimationFrame(animate);
+        frameCount++;
+
+        // Gentle Brain breathing & neural rotation
+        brainGroup.rotation.y = Math.sin(Date.now() * 0.0004) * 0.12;
+        brainGroup.rotation.x = Math.cos(Date.now() * 0.0003) * 0.06;
+
+        // Neural synaptic sparks flickering
+        if (frameCount % 6 === 0) {
+            brainFlashLines.forEach(l => {
+                l.mat.opacity = Math.random() > 0.65 ? 0.9 : l.baseOpacity;
+            });
+        }
+
+        // Animate Electric Currents & Lightning Jitter (Real electric feel!)
+        electricCurrents.forEach(p => {
+            p.t += p.speed;
+            if (p.t > 1) p.t = 0;
+            p.mesh.position.copy(p.curve.getPoint(p.t));
+        });
+
+        // Crackling lightning jitter on trunk lines
+        if (frameCount % 2 === 0) {
+            scene.traverse(obj => {
+                if (obj.userData && obj.userData.jitterLine && obj.userData.pts) {
+                    const pts = obj.userData.pts;
+                    const posAttr = obj.userData.jitterGeo.attributes.position;
+                    for (let i = 0; i < pts.length; i++) {
+                        if (i === 0 || i === pts.length - 1) {
+                            posAttr.setXYZ(i, pts[i].x, pts[i].y, pts[i].z);
+                        } else {
+                            // High-frequency electric jitter
+                            const jx = (Math.random() - 0.5) * 1.5;
+                            const jy = (Math.random() - 0.5) * 1.5;
+                            const jz = (Math.random() - 0.5) * 1.5;
+                            posAttr.setXYZ(i, pts[i].x + jx, pts[i].y + jy, pts[i].z + jz);
+                        }
+                    }
+                    posAttr.needsUpdate = true;
+                }
+            });
+        }
+
+        // Animate Active Skill Surges
+        for (let i = surgeBolts.length - 1; i >= 0; i--) {
+            const bolt = surgeBolts[i];
+            bolt.t += bolt.speed;
+            if (bolt.t >= 1) {
+                scene.remove(bolt.mesh);
+                surgeBolts.splice(i, 1);
+            } else {
+                bolt.mesh.position.copy(bolt.curve.getPoint(bolt.t));
+            }
+        }
+
+        renderer.render(scene, camera);
+        
+                // Update 2D HTML Agent Nodes positions
+        const tempV = new THREE.Vector3();
+        nodes3D.forEach(node => {
+            node.mesh.updateMatrixWorld();
+            tempV.setFromMatrixPosition(node.mesh.matrixWorld);
+            tempV.project(camera);
+            
+            if (tempV.z < 1) {
+                const x = (tempV.x * 0.5 + 0.5) * container.clientWidth;
+                const y = (tempV.y * -0.5 + 0.5) * container.clientHeight;
+                node.domEl.style.display = "block";
+                node.domEl.style.left = x + "px";
+                node.domEl.style.top = y + "px";
+            } else {
+                node.domEl.style.display = "none";
+            }
+        });
+        
+        // Pin Hologram div in 3D center
+        tempV.copy(centerPos);
+        tempV.project(camera);
+        const hX = (tempV.x * 0.5 + 0.5) * container.clientWidth;
+        const hY = (tempV.y * -0.5 + 0.5) * container.clientHeight;
+        hologramEl.style.left = `${hX}px`;
+        hologramEl.style.top = `${hY}px`;
+    }
+    animate();
+
+    /* ---------- AGENT SKILLS INTERACTION DOSSIER ---------- */
+    zonesEl.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-neural]');
+        if (!target) {
+            panelEl.classList.add('opacity-0');
+            setTimeout(() => panelEl.classList.add('hidden'), 300);
+            return;
+        }
+        
+        const agent = AGENTS.find(a => a.id === target.dataset.neural);
+        if (!agent) return;
+
+        const skills = AGENT_SKILLS[agent.id] || [];
+
+        panelEl.innerHTML = `
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="rounded px-2 py-0.5 text-[9px] font-black tracking-widest text-white shadow-xs" style="background:${agent.color}">${DEPTS[agent.dept].short}</span>
+                    <span class="text-[10px] font-extrabold text-amber-400 border border-slate-700 bg-slate-800 px-2 py-0.5 rounded">${agent.rarity}</span>
+                </div>
+                <button id="close-neural-panel" class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white transition">✕</button>
+            </div>
+            
+            <div class="mt-3 flex items-center gap-3">
+                <div class="relative h-14 w-12 shrink-0 overflow-hidden rounded-xl bg-slate-800 border border-slate-700 shadow-md">
+                    ${mediaPortrait(agent)}
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-white leading-tight" style="text-shadow: 0 0 12px ${agent.color}">${agent.name}</h3>
+                    <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">${agent.title}</p>
+                    <span class="inline-flex items-center gap-1 text-[9px] font-mono text-cyan-400 mt-0.5">
+                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> ${agent.zone}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Skills List (Ref: skill.png) -->
+            <div class="mt-4 flex-1">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-[10px] font-black tracking-widest text-cyan-400 uppercase flex items-center gap-1.5">
+                        <svg class="h-3.5 w-3.5 text-cyan-400" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+                        Agent Skills (ทักษะคำสั่งการ)
+                    </p>
+                    <span class="text-[9px] font-bold text-slate-500">${skills.length} Skills</span>
+                </div>
+
+                <div class="space-y-2.5">
+                    ${skills.map((sk, idx) => `
+                        <div class="rounded-2xl border border-slate-800 bg-slate-800/60 p-3 shadow-inner transition hover:border-indigo-500/50 hover:bg-slate-800/90 group">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-700 text-base shadow-xs">${sk.icon}</span>
+                                    <div>
+                                        <p class="text-xs font-black text-white group-hover:text-cyan-300 transition-colors">${sk.name_th}</p>
+                                        <p class="text-[9px] font-mono text-slate-400">(${sk.name_en})</p>
+                                    </div>
+                                </div>
+                                <span class="rounded px-2 py-0.5 text-[8px] font-black ${sk.type==='ULTIMATE'?'bg-rose-500/20 text-rose-300 border border-rose-500/40':sk.type==='ACTIVE'?'bg-sky-500/20 text-sky-300 border border-sky-500/40':'bg-violet-500/20 text-violet-300 border border-violet-500/40'}">${sk.type}</span>
+                            </div>
+                            <p class="mt-2 text-[11px] text-slate-300 leading-relaxed">${sk.desc}</p>
+                            <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-700/60 text-[9px] font-mono text-slate-400">
+                                <span>Cost: <strong class="text-slate-200">${sk.cost}</strong></span>
+                                <span>CD: <strong class="text-slate-200">${sk.cd}</strong></span>
+                                <button data-activate-skill="${agent.id}" data-skill-name="${sk.name_th}" class="flex items-center gap-1 rounded-lg bg-gradient-to-r from-cyan-600 to-indigo-600 px-2.5 py-1 text-[9px] font-black text-white shadow-md transition hover:brightness-110 active:scale-95">
+                                    ⚡ ยิงคำสั่ง
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <!-- View Full Dossier Button -->
+            <div class="mt-4 pt-3 border-t border-slate-800 flex gap-2">
+                <button data-full-profile="${agent.id}" class="w-full rounded-xl bg-slate-800 py-2.5 text-center text-xs font-bold text-slate-200 hover:bg-slate-700 transition shadow-sm">
+                    ดูโปรไฟล์ฉบับเต็ม →
+                </button>
+            </div>
+        `;
+        
+        panelEl.classList.remove('hidden');
+        void panelEl.offsetWidth; 
+        panelEl.classList.remove('opacity-0');
+
+        // Panel Close handler
+        panelEl.querySelector('#close-neural-panel').onclick = () => {
+            panelEl.classList.add('opacity-0');
+            setTimeout(() => panelEl.classList.add('hidden'), 300);
+        };
+
+        // Full profile button
+        panelEl.querySelector('[data-full-profile]').onclick = () => {
+            openModal(agent.id);
+        };
+
+        // Activate Skill interactive button
+        panelEl.querySelectorAll('[data-activate-skill]').forEach(btn => {
+            btn.onclick = (ev) => {
+                ev.stopPropagation();
+                const aId = btn.dataset.activateSkill;
+                const sName = btn.dataset.skillName;
+                if (triggerElectricSurge) triggerElectricSurge(aId);
+                toast(`⚡ [${agent.name}] เปิดใช้งานสกิล "${sName}" สำเร็จ!`);
+            };
+        });
+    });
+
+    document.getElementById('neural-fullscreen-btn').addEventListener('click', () => {
+        container.classList.toggle('fullscreen-3d');
+        window.dispatchEvent(new Event('resize'));
+    });
+    window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+}
+
+/* Init All */
+renderChips(); renderRoster(); switchView('home');
+initPacmanAnim();
+initVirtualOffice3D();
+initNeuralMap3D();
+</script>
+</body>
+</html>

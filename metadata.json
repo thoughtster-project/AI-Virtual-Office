@@ -1,0 +1,6 @@
+{
+  "name": "Project Hermes Commander — Neural Office OS",
+  "description": "Hermes Control Hub & Virtual Office with Cyber-Neural Simulator, 3D Brain Simulation, and AI Agent Roster.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
